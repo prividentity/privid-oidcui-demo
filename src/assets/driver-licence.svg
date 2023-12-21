@@ -1,0 +1,12 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Frame">
+<rect id="Rectangle 34624291" x="2.5" y="4.5" width="19" height="15" rx="2.5" fill="white" stroke="black"/>
+<g id="Profile">
+<path id="Stroke 3" fill-rule="evenodd" clip-rule="evenodd" d="M8.00744 11.4286C8.9542 11.4286 9.72155 10.6609 9.72155 9.71411C9.72155 8.76735 8.9542 8 8.00744 8C7.06069 8 6.29298 8.76735 6.29298 9.71411C6.28978 10.6577 7.05216 11.4254 7.99536 11.4286H8.00744Z" stroke="black" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<path id="Rectangle 34624292" d="M5.5 15C5.5 14.1716 6.17157 13.5 7 13.5H9C9.82843 13.5 10.5 14.1716 10.5 15V15.5H5.5V15Z" fill="white" stroke="black"/>
+<line id="Line 573" x1="13" y1="9.5" x2="19" y2="9.5" stroke="black"/>
+<line id="Line 574" x1="13" y1="12.5" x2="19" y2="12.5" stroke="black"/>
+<line id="Line 575" x1="13" y1="15.5" x2="19" y2="15.5" stroke="black"/>
+</g>
+</svg>

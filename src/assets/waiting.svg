@@ -1,0 +1,42 @@
+<svg width="153" height="107" viewBox="0 0 153 107" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Group 1000005402">
+<rect id="Rectangle 34624297" y="3" width="153" height="104" rx="20" fill="#19184A"/>
+<g id="Mask group">
+<mask id="mask0_793_14302" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="11" y="0" width="130" height="90">
+<path id="Vector 6" d="M140.82 89.6407C86.2536 59.6643 32.9755 77.1505 13.1571 89.6407L11.6953 0H140.82V89.6407Z" fill="#D9D9D9"/>
+</mask>
+<g mask="url(#mask0_793_14302)">
+<g id="Group 1000004647">
+<path id="Rectangle 34624149" d="M52.0781 73.7027C52.0781 64.8661 59.2416 57.7027 68.0781 57.7027H85.9023C94.7389 57.7027 101.902 64.8661 101.902 73.7027V81.8599H52.0781V73.7027Z" fill="white"/>
+<circle id="Ellipse 67" cx="76.9897" cy="41.0946" r="12.8335" fill="#FBFBFB"/>
+</g>
+</g>
+</g>
+<g id="Mask group_2">
+<mask id="mask1_793_14302" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="12" y="73" width="129" height="17">
+<path id="Vector 6_2" d="M12.668 89.6407C32.4863 77.1505 85.7645 59.6643 140.33 89.6407H12.668Z" fill="black"/>
+</mask>
+<g mask="url(#mask1_793_14302)">
+<g id="Group 1000005389">
+<path id="Rectangle 34624149_2" d="M54.0742 73.7027C54.0742 65.9707 60.3422 59.7027 68.0742 59.7027H85.8984C93.6304 59.7027 99.8984 65.9707 99.8984 73.7027V79.8599H54.0742V73.7027Z" stroke="#5283EC" stroke-width="4"/>
+</g>
+</g>
+</g>
+<g id="Group 1000005403">
+<path id="Vector 5" d="M18 90C36.1631 77.1714 84.9915 59.2114 135 90H18Z" fill="url(#paint0_linear_793_14302)" fill-opacity="0.31"/>
+<path id="Vector 4" d="M18 90C36.1631 77.1714 84.9915 59.2114 135 90" stroke="#FFE69B" stroke-width="2"/>
+</g>
+<g id="Group 1000005400">
+<path id="Rectangle 9" d="M34 15H28C19.1634 15 12 22.1634 12 31V36" stroke="#5283EC" stroke-width="4" stroke-linecap="round"/>
+<path id="Rectangle 34624301" d="M34 95H28C19.1634 95 12 87.8366 12 79V74" stroke="#5283EC" stroke-width="4" stroke-linecap="round"/>
+<path id="Rectangle 34624302" d="M121 15H125C133.837 15 141 22.1634 141 31V36" stroke="#5283EC" stroke-width="4" stroke-linecap="round"/>
+<path id="Rectangle 34624303" d="M121 95H125C133.837 95 141 87.8366 141 79V74" stroke="#5283EC" stroke-width="4" stroke-linecap="round"/>
+</g>
+</g>
+<defs>
+<linearGradient id="paint0_linear_793_14302" x1="76.5" y1="73" x2="76.5" y2="90" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FFE69B"/>
+<stop offset="1" stop-color="#FFE69B" stop-opacity="0"/>
+</linearGradient>
+</defs>
+</svg>

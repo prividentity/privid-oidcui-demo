@@ -3,7 +3,7 @@ import { Label } from "../../ui/label";
 import ScanFaceAnimation from "../../../Animations/1-Selfie/Scan face.gif";
 import NoHat from "../../../assets/no-hat.svg";
 import Sun from "../../../assets/sun.svg";
-import ClutteredBg from "assets/cluttered-bg.svg";
+import ClutteredBg from "../../../assets/cluttered-bg.svg";
 import BackButton from "../components/backButton";
 import { useNavigateWithQueryParams } from "../../../utils/navigateWithQueryParams";
 import Stepper from "./Stepper";
@@ -12,6 +12,7 @@ import SwitchDeviceSelect from "../components/switchDeviceSelect";
 
 type Props = {
   heading?: string;
+  nextStep: ()=>void
 };
 
 const instructions = [
@@ -32,7 +33,7 @@ const instructions = [
   },
 ];
 
-function FaceScanningIntro(Props: Props) {
+function FaceScanningIntro({heading, nextStep}: Props) {
   const { navigateWithQueryParams } = useNavigateWithQueryParams();
   return (
     <>
@@ -87,7 +88,7 @@ function FaceScanningIntro(Props: Props) {
           <div>
             <Button
               className="w-full text-white bg-primary rounded-[24px] mt-4 hover:opacity-90 hover:bg-primary"
-              onClick={() => navigateWithQueryParams("/face-scan")}
+              onClick={() => nextStep()}
             >
               Start
             </Button>

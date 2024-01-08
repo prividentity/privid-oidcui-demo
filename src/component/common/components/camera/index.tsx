@@ -1,10 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
 import useCameraPermissions from "../../../../hooks/useCameraPermissions";
-import cameraIcon from "../../../assets/cameraIcon.svg";
-import deniedCameraIcon from "../../../assets/deniedCamera.svg";
+import cameraIcon from "../../../../assets/cameraIcon.svg";
+import deniedCameraIcon from "../../../../assets/deniedCamera.svg";
 import { Button } from "../../../ui/button";
-import completedCheck from "../../../assets/completedCheck.gif";
-import infoIcon from "../../../assets/infoIcon.svg";
+import completedCheck from "../../../../assets/completedCheck.gif";
 import { AllowCameraModal } from "../allowCameraModal";
 import useWasm from "../../../../hooks/useWasm";
 import useCamera from "../../../../hooks/useCamera";
@@ -17,6 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../ui/select";
+
+import { WasmContext } from "../../../../context/WasmContext";
 
 type Props = {
   heading?: string;
@@ -60,7 +61,10 @@ function CameraComponent(props: Props) {
   const enrollOneFaProgress: any = progress || 0;
   const { isCameraGranted, state }: any = useCameraPermissions(() => {});
 
+  const wasmContext = useContext(WasmContext);
+
   useEffect(() => {
+    setFinishSlider(false);
     setTimeout(() => {
       setFinishSlider(true);
     }, 2000);
@@ -73,8 +77,8 @@ function CameraComponent(props: Props) {
     }
   };
   const documentScan = frontDl || backDl || passportScan;
-  const { ready: wasmReady, wasmStatus, init: wasmInit } = useWasm();
-  const { ready, init, device, devices } = useCamera(
+  const { ready: wasmReady, wasmStatus, init: wasmInit } = useWasm(wasmContext.setIsWasmLoaded, wasmContext.setIsSupported);
+  const { ready, init, device, devices, clearCamera } = useCamera(
     CameraConfig?.elementId,
     CameraConfig?.mode as any,
     CameraConfig?.requireHD,
@@ -86,29 +90,31 @@ function CameraComponent(props: Props) {
       setDeviceId(device);
     }
   }, [device]);
-  const handleWasmLoad = () => {
-    if (!wasmReady && wasmStatus.isChecking) return;
-    if (
-      wasmReady &&
-      !wasmStatus.isChecking &&
-      wasmStatus.support &&
-      finishSlider
-    ) {
-      if (!ready) {
+
+  const [cameraTriggered, setCameraTriggered] = useState(false);
+  // Camera and Wasm init end
+  useEffect(() => {
+    if(!wasmContext) return;
+    if (!wasmContext.isWasmLoaded && wasmContext.isSupported.isChecking) {
+      console.log("INIT WASM");
+      wasmInit();
+    }
+    console.log("useEffect", wasmContext)
+    if(wasmContext.isWasmLoaded && wasmContext.isSupported?.support) {
+      if(!ready && !cameraTriggered){
+        setCameraTriggered(true);
+        console.log("called camera init");
         init();
-      } else if (isCameraGranted && ready) {
+      }
+      else if (isCameraGranted && ready) {
         cameraReady();
       }
     }
-    if (!wasmReady && !wasmStatus.isChecking && !wasmStatus.support) {
+
+    if (!wasmContext.isWasmLoaded && !wasmContext.isSupported.isChecking && !wasmContext.isSupported?.support) {
       onCameraFail();
     }
-  };
-  useEffect(() => {
-    handleWasmLoad();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wasmReady, ready, wasmStatus, finishSlider]);
-  // Camera and Wasm init end
+  }, [wasmContext,cameraTriggered, isCameraGranted, ready]);
 
   const onFaceCall = () => {
     setMinimizeCamera(true);

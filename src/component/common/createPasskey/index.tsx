@@ -1,6 +1,6 @@
 import { Button } from "../../ui/button";
 import { Label } from "../../ui/label";
-import PasskeyBg from "../../assets/passkey-bg.svg";
+import PasskeyBg from "../../../assets/passkey-bg.svg";
 import Stepper from "../faceScanningIntro/Stepper";
 import Layout from "../layout";
 import BackButton from "../components/backButton";

@@ -1,5 +1,5 @@
 import Layout from "../../layout";
-import lock from "../../../assets/lock.svg";
+import lock from "../../../../assets/lock.svg";
 import CameraComponent from "../../components/camera";
 import BackButton from "../../../common/components/backButton";
 import { useNavigateWithQueryParams } from "../../../../utils/navigateWithQueryParams";
@@ -15,9 +15,10 @@ import SwitchDeviceSelect from "../../../common/components/switchDeviceSelect";
 
 type Props = {
   heading?: string;
+  nextStep: ()=>void;
 };
 
-function BackDlScan(Props: Props) {
+function BackDlScan({nextStep}: Props) {
   const { navigateWithQueryParams } = useNavigateWithQueryParams();
   const context: any = useContext(UserContext);
   const [completed, setCompleted] = useState(false);
@@ -82,7 +83,8 @@ function BackDlScan(Props: Props) {
     context.setUser({ ...context.user, backDocumentData });
     setCompleted(true);
     setTimeout(() => {
-      navigateWithQueryParams("/waiting");
+      nextStep()
+      // navigateWithQueryParams("/waiting");
     }, 7000);
   };
 

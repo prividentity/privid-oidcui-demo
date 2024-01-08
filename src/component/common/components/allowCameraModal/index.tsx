@@ -5,8 +5,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../../../ui/dialog";
-import CameraInstruction from "../../../assets/cameraInstruction.svg";
-import lock from "../../../assets/lock.svg";
+import CameraInstruction from "../../../../assets/cameraInstruction.svg";
+import lock from "../../../../assets/lock.svg";
 
 interface props {
   open: boolean;

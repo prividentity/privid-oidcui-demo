@@ -1,4 +1,14 @@
 import React, { useState } from "react";
+import FaceScan from "../component/common/faceScan";
+import DocumentSelection from "../component/common/documentSelection";
+import FaceScanningIntro from "../component/common/faceScanningIntro";
+import DriversLicenseIntro, { documentSideEnum } from "../component/common/documentSelection/driversLicenceIntro";
+import FrontDlScan from "../component/common/documentSelection/frontDlScan";
+import BackDlScan from "../component/common/documentSelection/backDlScan";
+import CreatePasskey from "../component/common/createPasskey";
+import Success from "../component/common/verifyingScreens/Success";
+import FailureScreen from "../component/common/verifyingScreens/failureScreens";
+import UserConsent from "../component/common/userConsent";
 
 const Registration = () => {
   enum RegistrationStep {
@@ -18,40 +28,57 @@ const Registration = () => {
     Failure = "FAILURE",
   }
 
-  const [steps, setSteps] = useState([]);
+  const [steps, setSteps] = useState([
+    RegistrationStep.Consent,
+    RegistrationStep.PreEnroll,
+    RegistrationStep.Enroll,
+    RegistrationStep.PreFrontDlScan,
+    RegistrationStep.FrontDlScan,
+    RegistrationStep.PreBacktDlScan,
+    RegistrationStep.BackDlScan,
+    RegistrationStep.Success
+  ]);
+
+  const [stepIndex, setStepIndex] = useState(0);
+
   const [currentStep, setCurrentStep] = useState<RegistrationStep>(
-    RegistrationStep.None
+    steps[stepIndex]
   );
+
+  const handleNextStep = () => {
+    setCurrentStep(steps[stepIndex+1])
+    setStepIndex(stepIndex+1);
+  }
 
   switch (currentStep) {
     case RegistrationStep.Consent:
-      return <>Consent</>;
+      return <UserConsent nextStep={handleNextStep} />;
     case RegistrationStep.PreEnroll:
-      return <>Pre Enroll</>;
+      return <FaceScanningIntro nextStep={handleNextStep} />;
     case RegistrationStep.Enroll:
-      return <>Enroll</>;
+      return <FaceScan nextStep={handleNextStep}/>;
     case RegistrationStep.DocumentTypeSelection:
-      return <>Document Type Selection</>;
+      return <DocumentSelection nextStep={handleNextStep}/>;
     case RegistrationStep.PreFrontDlScan:
-      return <>Pre-Front Document Scan</>;
+      return <DriversLicenseIntro documentSide={documentSideEnum.FRONT} nextStep={handleNextStep}/>;
     case RegistrationStep.FrontDlScan:
-      return <>Front DL Scan</>;
+      return <FrontDlScan nextStep={handleNextStep} />;
     case RegistrationStep.PreBacktDlScan:
-      return <>Pre-Back DL Scan</>;
+      return <DriversLicenseIntro documentSide={documentSideEnum.FRONT} nextStep={handleNextStep}/>;
     case RegistrationStep.BackDlScan:
-      return <>Back DL Scan</>;
-    case RegistrationStep.PrePassportScan:
-      return <>Pre-Passport Scan</>;
-    case RegistrationStep.PassportScan:
-      return <>Passport Scan</>;
+      return <BackDlScan nextStep={handleNextStep}/>;
+    // case RegistrationStep.PrePassportScan:
+    //   return <>Pre-Passport Scan</>;
+    // case RegistrationStep.PassportScan:
+    //   return <>Passport Scan</>;
     case RegistrationStep.Passkey:
-      return <>Passkey</>;
+      return <CreatePasskey />;
     case RegistrationStep.Success:
-      return <>Success</>;
+      return <Success />;
     case RegistrationStep.Failure:
-      return <>Failure</>;
+      return <FailureScreen />;
     case RegistrationStep.None:
-      return <>None</>;
+      return <></>;
 
     default:
       return <></>;

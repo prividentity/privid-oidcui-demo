@@ -1,4 +1,4 @@
-import lock from "assets/lock.svg";
+import lock from "../../../../assets/lock.svg";
 import useCameraPermissions from "../../../../hooks/useCameraPermissions";
 import { useNavigateWithQueryParams } from "../../../../utils/navigateWithQueryParams";
 import { useContext } from "react";
@@ -18,9 +18,10 @@ import CameraComponent from "../../components/camera";
 
 type Props = {
   heading?: string;
+  nextStep: ()=>void;
 };
 
-function FaceLogin(Props: Props) {
+function FaceLogin({nextStep}: Props) {
   const context = useContext(UserContext);
   const { navigateWithQueryParams } = useNavigateWithQueryParams();
   const { isCameraGranted } = useCameraPermissions(() => {});
@@ -38,7 +39,8 @@ function FaceLogin(Props: Props) {
       uuid: faceLoginData?.puid,
       guid: faceLoginData?.guid,
     });
-    handelLoginResponse(faceLoginData);
+   // handelLoginResponse(faceLoginData);
+   nextStep();
   };
 
   const handelLoginResponse = async (result: any) => {
@@ -52,7 +54,8 @@ function FaceLogin(Props: Props) {
       const data: any = await getUser(payload);
       if (data?.data?.level === ERROR || data?.data?.statusCode === 404) {
         context.setFailedMessage(AUTHENTICATION_FAILED);
-        navigateWithQueryParams("/failed");
+        nextStep();
+        // navigateWithQueryParams("/failed");
         context.setUser({
           ...context.user,
           data,

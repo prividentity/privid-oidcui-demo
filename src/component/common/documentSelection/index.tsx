@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Button } from "../../ui/button";
 import { Label } from "../../ui/label";
-import DriversLicense from "../../assets/driver-licence.svg";
-import PassportIcon from "../../assets/passport-icon.svg";
-import EditIcon from "../../assets/edit.svg";
+import DriversLicense from "../../../assets/driver-licence.svg";
+import PassportIcon from "../../../assets/passport-icon.svg";
+import EditIcon from "../../../assets/edit.svg";
 import { RadioGroup, RadioGroupItem } from "../../ui/radio-group";
 import Layout from "../layout";
 import BackButton from "../components/backButton";
@@ -12,6 +12,7 @@ import SwitchDeviceSelect from "../components/switchDeviceSelect";
 
 type Props = {
   heading?: string;
+  nextStep: ()=>void
 };
 
 const options = [
@@ -42,9 +43,14 @@ const options = [
   },
 ];
 
-function DocumentSelection(Props: Props) {
+function DocumentSelection({nextStep}: Props) {
   const { navigateWithQueryParams } = useNavigateWithQueryParams();
   const [flow, setFlow] = useState<any>("drivers-licence");
+
+
+const handleNextStep = () => {
+  nextStep();
+}
   return (
     <>
       <Layout>
@@ -115,11 +121,11 @@ function DocumentSelection(Props: Props) {
                   case "us-identification":
                   case "national-state-id":
                   case "health-insurance-card":
-                    return navigateWithQueryParams("/drivers-licence-intro");
+                    return handleNextStep();
                   case "passport":
-                    return navigateWithQueryParams("/passport-scan-intro");
+                    return handleNextStep();
                   case "self":
-                    return navigateWithQueryParams("/address");
+                    return handleNextStep();
 
                   default:
                     break;

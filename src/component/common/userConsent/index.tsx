@@ -9,7 +9,12 @@ import Layout from "../layout";
 import BackButton from "../components/backButton";
 import useScrollToBottom from "../../../hooks/useScrollBottom";
 
-const UserConsent = () => {
+
+interface props  {
+  nextStep: ()=>void
+}
+
+const UserConsent = ({nextStep}:props) => {
   const [disable, setDisable] = useState<boolean>(false);
   const { navigateWithQueryParams } = useNavigateWithQueryParams();
   const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null);
@@ -214,7 +219,7 @@ const UserConsent = () => {
           <Button
             className="w-full text-white bg-primary rounded-[24px] mt-4 hover:opacity-90 hover:bg-primary"
             disabled={!disable}
-            onClick={() => navigateWithQueryParams("/user-info")}
+            onClick={nextStep}
           >
             Continue
           </Button>

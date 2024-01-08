@@ -1,4 +1,4 @@
-import waitingIcon from "../../Animations/5-Verify/GIFs/Face ID.gif";
+import waitingIcon from "../../../Animations/5-Verify/GIFs/Face ID.gif";
 import { useContext, useEffect, useState } from "react";
 import { Label } from "../../ui/label";
 import Layout from "../layout";

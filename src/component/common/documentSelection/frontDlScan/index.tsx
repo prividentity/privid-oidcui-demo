@@ -1,6 +1,6 @@
 import { Label } from "../../../ui/label";
 import Layout from "../../layout";
-import lock from "../../../assets/lock.svg";
+import lock from "../../../../assets/lock.svg";
 import CameraComponent from "../../components/camera";
 import BackButton from "../../../common/components/backButton";
 import { useNavigateWithQueryParams } from "../../../../utils/navigateWithQueryParams";
@@ -19,9 +19,10 @@ import SwitchDeviceSelect from "../../components/switchDeviceSelect";
 
 type Props = {
   heading?: string;
+  nextStep: ()=>void;
 };
 
-function FrontDlScan(Props: Props) {
+function FrontDlScan({nextStep}: Props) {
   const { navigateWithQueryParams } = useNavigateWithQueryParams();
   const onFailCallback = () => {};
   const context: any = useContext(UserContext);
@@ -91,7 +92,8 @@ function FrontDlScan(Props: Props) {
       });
     setCompleted(true);
     setTimeout(() => {
-      navigateWithQueryParams("/drivers-licence-back-intro");
+      nextStep();
+      // navigateWithQueryParams("/drivers-licence-back-intro");
     }, 8000);
   };
   const { scanFrontDocument, resultResponse, scanStatus } =

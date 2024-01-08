@@ -1,7 +1,7 @@
-import faceID from "../../assets/face-id.svg";
-import key from "../../assets/key.svg";
-import user from "../../assets/user.svg";
-import stepperTick from "../../assets/stepper-tick.svg";
+import faceID from "../../../assets/face-id.svg";
+import key from "../../../assets/key.svg";
+import user from "../../../assets/user.svg";
+import stepperTick from "../../../assets/stepper-tick.svg";
 
 function Stepper({ step }: any) {
   return (

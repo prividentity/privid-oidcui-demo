@@ -1,19 +1,25 @@
 import { Button } from "../../../ui/button";
 import { Label } from "../../../ui/label";
-import ScanIDFrontAnimation from "../../../Animations/2-ID Card/GIFs/Scan ID-Front.gif";
-import ScanIDBackAnimation from "../../../Animations/2-ID Card/GIFs/Scan ID-Back.gif";
-import Visible from "../../../assets/ScanID/visibleCorner.svg";
-import NotCut from "../../../assets/ScanID/NotCut.svg";
-import Uncluttered from "../../../assets/ScanID/unClutteredBG.svg";
-import Reflective from "../../../assets/ScanID/reflective.svg";
+import ScanIDFrontAnimation from "../../../../Animations/2-ID Card/GIFs/Scan ID-Front.gif";
+import ScanIDBackAnimation from "../../../../Animations/2-ID Card/GIFs/Scan ID-Back.gif";
+import Visible from "../../../../assets/ScanID/visibleCorner.svg";
+import NotCut from "../../../../assets/ScanID/NotCut.svg";
+import Uncluttered from "../../../../assets/ScanID/unClutteredBG.svg";
+import Reflective from "../../../../assets/ScanID/reflective.svg";
 import Stepper from "../../faceScanningIntro/Stepper";
 import Layout from "../../layout";
 import BackButton from "../../components/backButton";
 import { useNavigateWithQueryParams } from "../../../../utils/navigateWithQueryParams";
 import SwitchDeviceSelect from "../../components/switchDeviceSelect";
 
+export enum documentSideEnum{
+  FRONT = "Front",
+  BACK = "Back",
+}
+
 type Props = {
-  documentSide?: string;
+  documentSide:documentSideEnum;
+  nextStep: ()=>void;
 };
 
 const instructions = [
@@ -36,7 +42,7 @@ const instructions = [
 ];
 
 function DriversLicenseIntro(Props: Props) {
-  const { documentSide } = Props;
+  const { documentSide, nextStep } = Props;
   const { navigateWithQueryParams } = useNavigateWithQueryParams();
   return (
     <>
@@ -53,20 +59,20 @@ function DriversLicenseIntro(Props: Props) {
               </div>
               <div className="mt-2">
                 <Label className="text-[28px] font-[500] text-primaryText">
-                  Scan {Props.documentSide || "front"} of ID card{" "}
+                  Scan {documentSide? documentSide : "front"} of ID card{" "}
                 </Label>
               </div>
               <div className="text-center overflow-auto h-[490px] mt-2 p-1 max-md:h-[unset]">
                 <div className="ps-8 pe-8">
                   <Label className="text-[14px] font-[400] text-secondaryText">
-                    Scan the {Props.documentSide || "front"} of your ID card in
+                    Scan the {documentSide? documentSide : "front"} of your ID card in
                     a well-lit area{" "}
                   </Label>
                 </div>
                 <div className="mt-5">
                   <img
                     src={
-                      Props.documentSide === "back"
+                      documentSide === documentSideEnum.BACK
                         ? ScanIDBackAnimation
                         : ScanIDFrontAnimation
                     }
@@ -100,11 +106,12 @@ function DriversLicenseIntro(Props: Props) {
             <Button
               className="w-full text-white bg-primary rounded-[24px] mt-4 hover:opacity-90 hover:bg-primary"
               onClick={() => {
-                if (documentSide === "back") {
-                  navigateWithQueryParams("/back-dl-scan");
-                } else {
-                  navigateWithQueryParams("/front-dl-scan");
-                }
+                nextStep();
+                // if (documentSide === documentSideEnum.BACK) {
+                //   navigateWithQueryParams("/back-dl-scan");
+                // } else {
+                //   navigateWithQueryParams("/front-dl-scan");
+                // }
               }}
             >
               Start

@@ -1,4 +1,9 @@
 import React, { useState } from "react";
+import FaceLogin from "../component/common/loginScreens/faceLogin";
+import Success from "../component/common/verifyingScreens/Success";
+import IdentityConsent from "../component/common/identityConsent";
+import UserConsent from "../component/common/userConsent";
+import Waiting from "../component/common/verifyingScreens/Waiting";
 
 const Authentication = () => {
   enum AuthenticationSteps {
@@ -17,34 +22,46 @@ const Authentication = () => {
     FaceLogin = "FaceLogin",
   }
 
-  const [steps, setSteps] = useState([]);
+
+  const [steps, setSteps] = useState([
+    AuthenticationSteps.Consent,
+    AuthenticationSteps.FaceLogin,
+    AuthenticationSteps.Success
+  ]);
+
+  const [stepIndex, setStepIndex] = useState(0);
+
   const [currentStep, setCurrentStep] = useState<AuthenticationSteps>(
-    AuthenticationSteps.None
+    steps[stepIndex]
   );
 
+  const handleNextStep = () => {
+    setCurrentStep(steps[stepIndex+1])
+    setStepIndex(stepIndex+1);
+  }
   switch (currentStep) {
     case AuthenticationSteps.Consent:
-      return <>Consent</>;
+      return <UserConsent nextStep={handleNextStep} />;
     case AuthenticationSteps.FaceLogin:
-      return <>Face Login</>;
-    case AuthenticationSteps.DocumentTypeSelection:
-      return <>Document Type Selection</>;
-    case AuthenticationSteps.PreFrontDlScan:
-      return <>Pre-Front Document Scan</>;
-    case AuthenticationSteps.FrontDlScan:
-      return <>Front DL Scan</>;
-    case AuthenticationSteps.PreBacktDlScan:
-      return <>Pre-Back DL Scan</>;
-    case AuthenticationSteps.BackDlScan:
-      return <>Back DL Scan</>;
-    case AuthenticationSteps.PrePassportScan:
-      return <>Pre-Passport Scan</>;
-    case AuthenticationSteps.PassportScan:
-      return <>Passport Scan</>;
-    case AuthenticationSteps.Passkey:
-      return <>Passkey</>;
+      return <FaceLogin  nextStep={handleNextStep} />;
+    // case AuthenticationSteps.DocumentTypeSelection:
+    //   return <>Document Type Selection</>;
+    // case AuthenticationSteps.PreFrontDlScan:
+    //   return <>Pre-Front Document Scan</>;
+    // case AuthenticationSteps.FrontDlScan:
+    //   return <>Front DL Scan</>;
+    // case AuthenticationSteps.PreBacktDlScan:
+    //   return <>Pre-Back DL Scan</>;
+    // case AuthenticationSteps.BackDlScan:
+    //   return <>Back DL Scan</>;
+    // case AuthenticationSteps.PrePassportScan:
+    //   return <>Pre-Passport Scan</>;
+    // case AuthenticationSteps.PassportScan:
+    //   return <>Passport Scan</>;
+    // case AuthenticationSteps.Passkey:
+    //   return <>Passkey</>;
     case AuthenticationSteps.Success:
-      return <>Success</>;
+      return <Waiting />;
     case AuthenticationSteps.Failure:
       return <>Failure</>;
     case AuthenticationSteps.None:

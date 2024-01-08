@@ -19,9 +19,10 @@ import SwitchDeviceSelect from "../components/switchDeviceSelect";
 
 type Props = {
   heading?: string;
+  nextStep: ()=>void;
 };
 
-function FaceScan(Props: Props) {
+function FaceScan({heading, nextStep}: Props) {
   const context = useContext(UserContext);
   const { navigateWithQueryParams } = useNavigateWithQueryParams();
   const { isCameraGranted } = useCameraPermissions(() => {});
@@ -75,7 +76,8 @@ function FaceScan(Props: Props) {
       localStorage.setItem("uuid", JSON.stringify(enrollData?.puid || {}));
       setTimeout(async () => {
         await closeCamera(ELEMENT_ID);
-        navigateWithQueryParams("/doc-selection");
+        nextStep();
+        // navigateWithQueryParams("/doc-selection");
       }, 2000);
     }
   };

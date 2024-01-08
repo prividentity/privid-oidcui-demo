@@ -1,8 +1,8 @@
 import { useContext } from "react";
-import FailIdCard from "../../../Animations/5-Verify/GIFs/Fail-ID Card.gif";
-import FailPassport from "../../../Animations/5-Verify/GIFs/Fail-Passport.gif";
-import FailSelfie from "../../../Animations/5-Verify/GIFs/Fail-Selfie.gif";
-import NotApprovedImage from "../../../assets/not-approved.svg";
+import FailIdCard from "../../../../Animations/5-Verify/GIFs/Fail-ID Card.gif";
+import FailPassport from "../../../../Animations/5-Verify/GIFs/Fail-Passport.gif";
+import FailSelfie from "../../../../Animations/5-Verify/GIFs/Fail-Selfie.gif";
+import NotApprovedImage from "../../../../assets/not-approved.svg";
 import { Label } from "../../../ui/label";
 import { Button } from "../../../ui/button";
 import Layout from "../../../common/layout";

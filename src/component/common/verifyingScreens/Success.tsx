@@ -1,4 +1,4 @@
-import success from "../../Animations/5-Verify/GIFs/Success.gif";
+import success from "../../../Animations/5-Verify/GIFs/Success.gif";
 import { Label } from "../../ui/label";
 import { Button } from "../../ui/button";
 import Layout from "../layout";

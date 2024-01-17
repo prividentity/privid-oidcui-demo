@@ -1,7 +1,8 @@
 // @ts-nocheck
 /* eslint-disable no-unused-vars */
 import { useState } from "react";
-import { enroll1FA } from "@privateid/cryptonets-web-sdk";
+// import { enroll1FA } from "@privateid/cryptonets-web-sdk";
+import { enroll1FA } from "@privateid/ping-oidc-web-sdk-alpha";
 import {
   getStatusMessage,
   MessageType,
@@ -35,8 +36,8 @@ const useEnrollOneFaWithLiveness = (onSuccess) => {
       const bestImage = await enroll1FA(callback, {
         input_image_format: "rgba",
         mf_token: token,
-        skip_antispoof:
-          true || searchParams.get("skipAntispoof") === "true" || skipAntispoof,
+        skip_antispoof: false,
+        // true || searchParams.get("skipAntispoof") === "true" || skipAntispoof,
       });
       if (bestImage) {
         setEnrollPortrait(
@@ -59,6 +60,7 @@ const useEnrollOneFaWithLiveness = (onSuccess) => {
         setEnrollStatus("Please try again");
       }
       setProgress(0);
+      RerunAction.clearCheck();
       setTimeout(() => {
         enrollUserOneFa("", skipAntispoofProcess);
       }, 3000);
@@ -109,22 +111,20 @@ const useEnrollOneFaWithLiveness = (onSuccess) => {
   };
 
   const callback = async (result) => {
-    console.log("enroll callback:", result);
+    console.log("Enroll callback result:", result);
     RerunAction.RerunAction = false;
-    RerunAction.clearCheck();
-    if (result.returnValue.status === 0) {
-      if (result.returnValue.guid && result.returnValue.puid) {
-        if (progress <= 100) {
-          setProgress((p) => p + 20);
-        }
-        setEnrollStatus("Enroll Success");
-        setTimeout(() => {
-          onSuccess(result.returnValue);
-          setEnrollData(result.returnValue);
-        }, 3000);
-      } else {
-        handleFailureCase(result, false);
+    if (result.returnValue?.success) {
+      RerunAction.clearCheck();
+      if (progress <= 100) {
+        setProgress((p) => p + 20);
       }
+      setEnrollStatus("Enroll Success");
+      // setTimeout(() => {
+      onSuccess(result.returnValue);
+      setEnrollData(result.returnValue);
+      // }, 3000);
+    } else if (result.returnValue.status === 0) {
+      handleFailureCase(result, false);
     } else {
       handleFailureCase(result, true);
     }
@@ -136,7 +136,6 @@ const useEnrollOneFaWithLiveness = (onSuccess) => {
     progress,
     enrollPortrait,
     enrollData,
-    RerunAction,
   };
 };
 

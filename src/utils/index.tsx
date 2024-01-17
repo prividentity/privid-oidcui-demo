@@ -114,25 +114,36 @@ const MOBILE_CANVAS_SIZE = {
 
 export const CANVAS_SIZE: any = isMobile ? MOBILE_CANVAS_SIZE : WEB_CANVAS_SIZE;
 
-export const convertLinkToImageData = async (link: string) => {
-  const newImg = new Image();
-  newImg.crossOrigin = "anonymous";
-  newImg.src = link;
-  newImg.onload = async () => {
-    const imgSize = {
-      w: newImg.width,
-      h: newImg.height,
+export const convertLinkToImageData = (link: string): Promise<ImageData> => {
+  return new Promise((resolve, reject) => {
+    const newImg = new Image();
+    newImg.crossOrigin = "anonymous";
+    newImg.src = link;
+
+    newImg.onload = () => {
+      const imgSize = {
+        w: newImg.width,
+        h: newImg.height,
+      };
+      const canvas = document.createElement("canvas");
+      canvas.setAttribute("height", `${imgSize.h}`);
+      canvas.setAttribute("width", `${imgSize.w}`);
+      const ctx = canvas.getContext("2d");
+
+      if (!ctx) {
+        reject("Could not get 2D context");
+        return;
+      }
+
+      ctx.drawImage(newImg, 0, 0);
+      const enrollImage = ctx.getImageData(0, 0, imgSize.w, imgSize.h);
+      resolve(enrollImage);
     };
-    const canvas = document.createElement("canvas");
-    canvas.setAttribute("height", `${imgSize.h}`);
-    canvas.setAttribute("width", `${imgSize.w}`);
-    const ctx = canvas.getContext("2d");
-    // @ts-ignore
-    ctx.drawImage(newImg, 0, 0);
-    // @ts-ignore
-    const enrollImage = ctx.getImageData(0, 0, imgSize.w, imgSize.h);
-    return enrollImage;
-  };
+
+    newImg.onerror = () => {
+      reject("Error loading image");
+    };
+  });
 };
 
 export function getStatusFromUser(user: any) {
@@ -188,7 +199,20 @@ export const getFirstRequirement = async (
   return null;
 };
 
-export const getProjectFromURL = (url: string): any => {
-  const skinValue = window?.location?.hostname?.split(".")?.[0];
-  return skinValue;
+export const getProjectFromURL = (): any => {
+  var queryString = window.location.search;
+  var urlParams = new URLSearchParams(queryString);
+  var themeValue = urlParams.get("theme");
+  return themeValue;
+};
+
+export const formateDate = (dateString: string) => {
+  if (!dateString) return '-'
+  const dateObject = new Date(dateString);
+
+  // Extracting components of the date
+  const year = dateObject.getFullYear();
+  const month = dateObject.getMonth() + 1; // Months are zero-based, so we add 1
+  const day = dateObject.getDate();
+  return day + '/' + month + '/' + year
 };

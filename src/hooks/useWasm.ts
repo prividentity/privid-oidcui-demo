@@ -1,38 +1,75 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { loadPrivIdModule } from "@privateid/cryptonets-web-sdk";
 import { getUrlParameter } from "../utils";
+import { UserContext } from "context/userContext";
+import { loadPrivIdModule as loadOidc } from "@privateid/ping-oidc-web-sdk-alpha";
 
 let isLoading = false;
-const useWasm = (setContextWasmLoaded= (isLoaded:any)=>{}, setContextWasmStatus= (status:any)=>{}) => {
+const useWasm = (
+  sessionToken = "",
+  apiUrl = "",
+  publicKey = "",
+  timeout = 0
+) => {
   // Initialize the state
   const [ready, setReady] = useState(false);
   const [wasmStatus, setWasmStatus] = useState<any>({ isChecking: true });
-  const [isWasmLoaded, setIsWasmLoaded] = useState(false);
+  const context = useContext(UserContext);
 
+  const { isWasmLoaded, setIsWasmLoaded } = context;
   const init = async () => {
-    const apiKey = getUrlParameter("api_key", null);
-    const apiUrl = getUrlParameter("api_url", null);
-    console.log("Use Wasm Called!!");
-    const isSupported = await loadPrivIdModule(
+    // const apiKey = getUrlParameter("api_key", null);
+    // const apiUrl = getUrlParameter("api_url", null);
+    // const isSupported = await loadPrivIdModule(
+    //   apiUrl,
+    //   apiKey,
+    //   null,
+    //   null,
+    //   false,
+    //   300000,
+    //   true
+    // );
+    // if (isSupported.support) {
+    //   setReady(true);
+    //   setWasmStatus({ isChecking: false, ...isSupported });
+    //   setIsWasmLoaded(true);
+    // } else {
+    //   setReady(false);
+    //   setWasmStatus({ isChecking: false, ...isSupported });
+    // }
+
+    const res = await loadOidc({
+      sessionToken,
       apiUrl,
-      apiKey,
-      null,
-      null,
-      false
-    );
-    if (isSupported.support) {
-      setContextWasmStatus({ isChecking: false, ...isSupported });
+      publicKey,
+      timeout,
+    });
+    console.log("OIDC WASM RES:", res);
+
+    if (res.support) {
       setReady(true);
-      setWasmStatus({ isChecking: false, ...isSupported });
+      setWasmStatus({ isChecking: false, ...res });
       setIsWasmLoaded(true);
-      setContextWasmLoaded(true);
     } else {
       setReady(false);
-      setWasmStatus({ isChecking: false, ...isSupported });
+      setWasmStatus({ isChecking: false, ...res });
     }
   };
 
-  return { ready, wasmStatus, init };
+  useEffect(() => {
+    if (ready) return;
+
+    if (!isWasmLoaded && !isLoading) {
+      init();
+      isLoading = true;
+    }
+    if (isWasmLoaded) {
+      setReady(true);
+      setWasmStatus({ isChecking: false, support: true });
+    }
+  }, [isWasmLoaded]);
+
+  return { ready, wasmStatus };
 };
 
 export default useWasm;

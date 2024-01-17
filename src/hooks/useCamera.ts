@@ -1,14 +1,17 @@
 import { useState } from "react";
-import { openCamera } from "@privateid/cryptonets-web-sdk";
+// import { openCamera } from "@privateid/cryptonets-web-sdk";
+import { openCamera } from "@privateid/ping-oidc-web-sdk-alpha";
 import { isIphoneCC, isMobile, mapDevices } from "../utils";
-import { CameraFaceMode } from "@privateid/cryptonets-web-sdk/dist/types";
+import { CameraFaceMode } from "@privateid/ping-oidc-web-sdk-alpha/dist/types";
+
 
 const useCamera = (
   element = "userVideo",
   requestFaceMode: CameraFaceMode = CameraFaceMode.front,
   requireHD = false,
   onCameraFail = () => {},
-  isDocumentScan = false
+  isDocumentScan = false,
+  canvasResolution: { width: number; height: number } | null = null
 ): {
   init: () => Promise<void>;
   devices: Array<{ label: string; value: string }>;
@@ -18,7 +21,6 @@ const useCamera = (
   setDevice: (value: ((prevState: string) => string) | string) => void;
   settings?: any;
   capabilities?: any;
-  clearCamera: ()=>void
 } => {
   // Initialize the state
   const [ready, setReady] = useState(false);
@@ -30,7 +32,6 @@ const useCamera = (
   const [cameraFeatures, setCameraFeatures] = useState({});
   const enableHDMode = requireHD;
   const init = async () => {
-    console.log("CAMERA INIT");
     if (ready) return;
     try {
       const {
@@ -43,9 +44,10 @@ const useCamera = (
         enableHDMode,
         null,
         requestFaceMode,
-        null,
+        canvasResolution,
         isDocumentScan && isMobile
       );
+      console.log({ settings, capabilities });
       if (isIphoneCC(capabilities)) {
         await setResolutionForIphoneCC();
       }
@@ -53,9 +55,14 @@ const useCamera = (
       setCameraFeatures({ settings, capabilities });
       setFaceMode(faceMode);
       if (Array.isArray(devices) && devices?.length > 0) {
+        const selectedDevice = devices.find(
+          (device) =>
+            device.deviceId === settings?.deviceId ||
+            device.groupId === settings?.groupId
+        );
         const options = devices?.map(mapDevices);
         setDevices(options);
-        setDevice(settings?.deviceId as string);
+        setDevice(selectedDevice?.deviceId as string);
       }
 
       if (devices?.length === 0) {
@@ -69,15 +76,6 @@ const useCamera = (
     }
   };
 
-  const clearCamera = () => {
-    setReady(false);
-    setDevices([]);
-    setDevice("");
-    setFaceMode(null);
-    setCameraFeatures({});
-    console.log("CAMERA CLEARED");
-  }
-
   return {
     ready,
     init,
@@ -86,7 +84,6 @@ const useCamera = (
     setDevice,
     faceMode,
     ...cameraFeatures,
-    clearCamera,
   };
 };
 

@@ -1,8 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import Signup from "../component/common/authentication/signup";
+import Signup from "common/authentication/signup";
 import { getUrlParameter } from "../utils";
-import { OidcContext } from "../context/oidcContext";
+import { ActionFlowEnum, OidcContext } from "../context/oidcContext";
 import { useNavigate } from "react-router-dom";
+import {
+  getPublicKey,
+  getTokenDetails,
+} from "@privateid/ping-oidc-web-sdk-alpha";
 
 const Homepage = () => {
   const [displayHomepage, setDisplayHomepage] = useState(false);
@@ -10,23 +14,43 @@ const Homepage = () => {
   const navigate = useNavigate();
   const oidcContext = useContext(OidcContext);
 
-  useEffect(() => {
+  const getTransactionDetails = async () => {
     const TransactionToken = getUrlParameter("transactionToken", "");
-    const InteractionUID = getUrlParameter("interactionUID", "");
-    const actionType = getUrlParameter("actionType","");
-    if (TransactionToken && InteractionUID) {
-        // GET TransactionToken details from Orchestration
-        oidcContext.setTransactionToken(TransactionToken);
-        oidcContext.setInteractionUid(InteractionUID);
-        oidcContext.setAalLevel(1);
-        oidcContext.setFalLevel(2);
-        oidcContext.setIalLevel(2);
-        if(actionType === "register"){
-          navigate("/register")
-        }
+    const publicKey = await getPublicKey({
+      baseUrl: process.env.REACT_APP_API_URL || "",
+    });
+    console.log("Public Key:", publicKey);
+    oidcContext.setPublicKey(publicKey);
+    if (TransactionToken) {
+      const tokenDetails = await getTokenDetails({
+        baseUrl: process.env.REACT_APP_API_URL || "",
+        token: TransactionToken,
+      });
+      console.log("token details: ", tokenDetails);
+
+      oidcContext.setTransactionToken(TransactionToken);
+      oidcContext.setInteractionUid(tokenDetails.interactionUid);
+      oidcContext.setOrganizationId(tokenDetails.organization);
+      oidcContext.setProductGroupId(tokenDetails.productGroupId);
+      oidcContext.setAalLevel(tokenDetails.requestAAL);
+      oidcContext.setAalLevel(tokenDetails.requestIAL);
+      oidcContext.setFalLevel(tokenDetails.requestFAL);
+      oidcContext.setActionFlow(tokenDetails.actionFlow);
+
+      if (tokenDetails.actionFlow === ActionFlowEnum.Register) {
+        navigate("/user-consent");
+      } else if (tokenDetails.actionFlow === ActionFlowEnum.Login) {
+        navigate("/login-options");
+      } else {
+        setDisplayHomepage(true);
+      }
     } else {
       setDisplayHomepage(true);
     }
+  };
+
+  useEffect(() => {
+    getTransactionDetails();
   }, []);
 
   return <>{displayHomepage ? <Signup /> : <></>}</>;

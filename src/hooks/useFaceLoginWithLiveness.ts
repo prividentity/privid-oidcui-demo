@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { faceLogin } from "@privateid/cryptonets-web-sdk";
+// import { faceLogin } from "@privateid/cryptonets-web-sdk";
+import { faceLogin } from "@privateid/ping-oidc-web-sdk-alpha";
 import { useSearchParams } from "react-router-dom";
 
 let showError = false;
@@ -14,13 +15,14 @@ const useFaceLoginWithLivenessCheck = (
   const [faceLoginInputImageData, setFaceLoginInputImageData] =
     useState<any>(null);
   const [faceLoginData, setPredictData] = useState<any>(null);
+  const [faceLoginResponseStatus, setFaceLoginResponseStatus] = useState<number>();
   let tries = 0;
   const faceLoginWithLiveness = async (skipAntispoof = false) => {
     // @ts-ignore
     const inputImage = await faceLogin(callback, {
       input_image_format: "rgba",
-      skip_antispoof:
-        searchParams.get("skipAntispoof") === "true" || skipAntispoof,
+      skip_antispoof: true
+        // searchParams.get("skipAntispoof") === "true" || skipAntispoof,
     });
     setFaceLoginInputImageData(inputImage);
   };
@@ -35,7 +37,9 @@ const useFaceLoginWithLivenessCheck = (
   };
 
   const handleWasmResponse = (returnValue: any) => {
-    onSetStatus?.(returnValue?.status);
+    if(returnValue?.status !== -100) {
+      setFaceLoginResponseStatus(returnValue?.status);
+    }
     if (returnValue?.error) {
       setPredictMessage(
         "Please position your face in the center of the circle"
@@ -59,14 +63,14 @@ const useFaceLoginWithLivenessCheck = (
   };
 
   const handleInvalidImage = (returnValue: any) => {
-    const { message = "" } = returnValue || {};
-    if (!showError) {
-      showError = true;
-      setPredictMessage(message);
-      setTimeout(() => {
-        showError = false;
-      }, 2000);
-    }
+    // const { message = "" } = returnValue || {};
+    // if (!showError) {
+    //   showError = true;
+    //   setPredictMessage(message);
+    //   setTimeout(() => {
+    //     showError = false;
+    //   }, 2000);
+    // }
 
     if (tries !== retryTimes) {
       if (isInitialPredict) {
@@ -97,6 +101,7 @@ const useFaceLoginWithLivenessCheck = (
     faceLoginInputImageData,
     faceLoginData,
     resetFaceLogin,
+    faceLoginResponseStatus,
   };
 };
 

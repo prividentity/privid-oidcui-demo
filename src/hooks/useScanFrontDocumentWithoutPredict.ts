@@ -8,6 +8,8 @@ import {
 import { CANVAS_SIZE } from "../utils";
 import { DocType } from "@privateid/cryptonets-web-sdk/dist/types";
 import Rerun from "../utils/reRuncheck";
+import { useToast } from "components/ui/use-toast";
+import { useNavigateWithQueryParams } from "utils/navigateWithQueryParams";
 
 const useScanFrontDocument = (
   onSuccess: ({
@@ -30,6 +32,8 @@ const useScanFrontDocument = (
   }) => void,
   enrollImageData: ImageData
 ) => {
+  const { navigateWithQueryParams } = useNavigateWithQueryParams();
+  const { toast } = useToast();
   const [isFound, setIsFound] = useState(false);
   const [resultStatus, setResultStatus] = useState(null);
   const [scanStatus, setScanStatus] = useState("");
@@ -170,7 +174,11 @@ const useScanFrontDocument = (
         returnValue?.cropped_doc_width,
         returnValue?.cropped_doc_height
       );
-      console.log("croppedDocument data?", { croppedDocumentBase64 });
+      console.log(
+        "croppedDocument data?",
+        { croppedDocumentBase64 },
+        enrollImageData
+      );
       const doCompare = async () => {
         await documentMugshotFaceCompare(
           faceCompareCallback,
@@ -183,7 +191,15 @@ const useScanFrontDocument = (
           }
         );
       };
-      doCompare();
+      if (enrollImageData) {
+        doCompare();
+      } else {
+        toast({
+          variant: "destructive",
+          description: "Image data not found. Please scan your face again.",
+        });
+        navigateWithQueryParams("/face-scan-intro");
+      }
     }
   }, [
     isFound,

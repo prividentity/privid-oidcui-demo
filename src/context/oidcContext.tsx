@@ -1,5 +1,11 @@
 import React, { createContext, useMemo, useState } from "react";
 
+export enum ActionFlowEnum {
+  Login = "login",
+  Register = "register",
+  Age = "age",
+}
+
 export const OidcContext = createContext({
   interactionUid: "",
   setInteractionUid: (interactionId: string) => {},
@@ -12,7 +18,13 @@ export const OidcContext = createContext({
   ialLevel: 0,
   setIalLevel: (ialLevel: number) => {},
   productGroupId: "",
-  setProductGroupId: (productGroupId: string) => {}
+  setProductGroupId: (productGroupId: string) => {},
+  actionFlow: "",
+  setActionFlow: (actionFlow: string) => {},
+  organizationId: "",
+  setOrganizationId: (organizationId: string) => {},
+  publicKey: "",
+  setPublicKey: (publicKey:string) => {},
 });
 
 const OidcContextProvider = ({ children }: { children: React.ReactNode }) => {
@@ -23,11 +35,14 @@ const OidcContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [ialLevel, setIalLevel] = useState(0);
 
   const [productGroupId, setProductGroupId] = useState("");
+  const [actionFlow, setActionFlow] = useState("");
+  const [organizationId, setOrganizationId] = useState("");
+  const [publicKey, setPublicKey] = useState("");
 
   const values = {
     interactionUid,
     setInteractionUid,
-    productGroupId, 
+    productGroupId,
     setProductGroupId,
     transactionToken,
     setTransactionToken,
@@ -37,6 +52,12 @@ const OidcContextProvider = ({ children }: { children: React.ReactNode }) => {
     setFalLevel,
     ialLevel,
     setIalLevel,
+    actionFlow,
+    setActionFlow,
+    organizationId,
+    setOrganizationId,
+    publicKey, 
+    setPublicKey,
   };
 
   const memoValues = useMemo(() => values, [values]);

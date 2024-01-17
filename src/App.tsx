@@ -5,7 +5,7 @@ import OidcContextProvider from "./context/oidcContext";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./router";
 import "./App.css";
-import { Toaster } from "./component/ui/toaster";
+import { Toaster } from "./components/ui/toaster";
 
 function App() {
   return (

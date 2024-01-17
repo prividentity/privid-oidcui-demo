@@ -12,6 +12,10 @@ export const UserContext = createContext({
   setLoginOption: (message: any) => {},
   themeHhs: false,
   setThemeHhs: (hhs: any) => {},
+  successMessage: "",
+  setSuccessMessage: (message: any) => {},
+  isWasmLoaded: false,
+  setIsWasmLoaded: (isWasmLoaded: boolean) => {},
 });
 
 const UserContextProvider = ({ children }: { children: React.ReactNode }) => {
@@ -20,6 +24,8 @@ const UserContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [failedMessage, setFailedMessage] = useState("");
   const [loginOption, setLoginOption] = useState("");
   const [themeHhs, setThemeHhs] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isWasmLoaded, setIsWasmLoaded] = useState(false);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const values = {
     user,
@@ -32,9 +38,13 @@ const UserContextProvider = ({ children }: { children: React.ReactNode }) => {
     setLoginOption,
     themeHhs,
     setThemeHhs,
+    successMessage, 
+    setSuccessMessage,
+    isWasmLoaded,
+    setIsWasmLoaded,
   };
   useEffect(() => {
-    const projectName = getProjectFromURL(window?.location?.search);
+    const projectName = getProjectFromURL();
     if (projectName === "hhs") {
       setThemeHhs(true);
     }

@@ -32,15 +32,12 @@ const Homepage = () => {
       oidcContext.setInteractionUid(tokenDetails.interactionUid);
       oidcContext.setOrganizationId(tokenDetails.organization);
       oidcContext.setProductGroupId(tokenDetails.productGroupId);
-      oidcContext.setAalLevel(tokenDetails.requestAAL);
-      oidcContext.setAalLevel(tokenDetails.requestIAL);
-      oidcContext.setFalLevel(tokenDetails.requestFAL);
       oidcContext.setActionFlow(tokenDetails.actionFlow);
 
       if (tokenDetails.actionFlow === ActionFlowEnum.Register) {
         navigate("/user-consent");
       } else if (tokenDetails.actionFlow === ActionFlowEnum.Login) {
-        navigate("/login-options");
+        navigate("/face-login");
       } else {
         setDisplayHomepage(true);
       }

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import lock from "assets/lock.svg";
 import useCameraPermissions from "hooks/useCameraPermissions";
 import { useNavigateWithQueryParams } from "utils/navigateWithQueryParams";

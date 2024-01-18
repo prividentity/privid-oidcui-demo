@@ -8,6 +8,7 @@ import HhsLogo from "../../assets/hhsMainLogo.svg";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import useWasm from "hooks/useWasm";
 import { OidcContext } from "context/oidcContext";
+import { getPublicKey } from "@privateid/ping-oidc-web-sdk-alpha";
 
 type Props = {
   children?: any;
@@ -22,11 +23,12 @@ const Layout = (props: Props) => {
   const { setUser, user, setTokenParams, themeHhs, setSuccessMessage } =
     useContext(UserContext);
   const oidcContext = useContext(OidcContext);
+  const getPublicKey = await getPublicKey();
   const url = process.env.REACT_APP_API_URL || "";
   const { ready: wasmReady, wasmStatus } = useWasm(
     oidcContext.transactionToken,
     url,
-    "-----BEGIN PUBLIC KEY-----\nMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAkUejlGQtY6fC/B8HY8lI\nCRZys4mQVgI62YI1POIAgcfEYXbrtKGpYJOtYcjgzZJ5Eg7VYKNEsAvfRDYDd+QX\nGqVgYiayIYeqDkgTNPnvrXLQVm/42pSWWYvOaq/DlJmLLpkQKwic45dg58VCP2A/\nzF29fjzfeofn2Im1xjvMs1NhfSd7uJAimEy8hV6MlZh03Z4iZmdl3+f6n8t/KR/Z\nwU6tKw6nbDWEuMyEMsUXkGRWyQvlX2/t5WvCx7xMX2LPlmXGhutYXJlG6rfu4PtN\nKDcGzQFySp1NuU+eV75eGiyfGwg33HRwab/jQr/FrtgphT5Q+sNUKSRZwWXDuGGd\n4wb0E1YwUwdJP0osxJ9v3g62PZD/id/Bec7TqNWhRAWhXux2jexwvwglWh497cJj\nkkLLG5QKJXGUh6S7f46y+TgGoXX0ME8nJM9jCu2OjBXqvVM17SiwU29XoYLrk2G1\nSCqqU6kivOW2cAeIDAYJtlYV5K9kPh4xYoWXKKFcLBcR35I8bdHjeMIHmp4Z+9Zm\nDfhByrDRHxIoz6cKThhX+DqrinKx928tQCaMth1S1uMQp+VDUnA4016yQVtf6XtY\nVfJzU8xt2cQ2nTSTMnwtcAET6GwFQSf17i0L5HiIZXzt685215K8tA6Oe41DsP5E\ngcyHe6R8lM7/HSI+7fn7MrUCAwEAAQ==\n-----END PUBLIC KEY-----"
+    "-----BEGIN PUBLIC KEY-----\nMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAkUejlGQtY6fC/B8HY8lI\nCRZys4mQVgI62YI1POIAgcfEYXbrtKGpYJOtYcjgzZJ5Eg7VYKNEsAvfRDYDd+QX\nGqVgYiayIYeqDkgTNPnvrXLQVm/42pSWWYvOaq/DlJmLLpkQKwic45dg58VCP2A/\nzF29fjzfeofn2Im1xjvMs1NhfSd7uJAimEy8hV6MlZh03Z4iZmdl3+f6n8t/KR/Z\nwU6tKw6nbDWEuMyEMsUXkGRWyQvlX2/t5WvCx7xMX2LPlmXGhutYXJlG6rfu4PtN\nKDcGzQFySp1NuU+eV75eGiyfGwg33HRwab/jQr/FrtgphT5Q+sNUKSRZwWXDuGGd\n4wb0E1YwUwdJP0osxJ9v3g62PZD/id/Bec7TqNWhRAWhXux2jexwvwglWh497cJj\nkkLLG5QKJXGUh6S7f46y+TgGoXX0ME8nJM9jCu2OjBXqvVM17SiwU29XoYLrk2G1\nSCqqU6kivOW2cAeIDAYJtlYV5K9kPh4xYoWXKKFcLBcR35I8bdHjeMIHmp4Z+9Zm\nDfhByrDRHxIoz6cKThhX+DqrinKx928tQCaMth1S1uMQp+VDUnA4016yQVtf6XtY\nVfJzU8xt2cQ2nTSTMnwtcAET6GwFQSf17i0L5HiIZXzt685215K8tA6Oe41DsP5E\ngcyHe6R8lM7/HSI+7fn7MrUCAwEAAQ==\n-----END PUBLIC KEY-----".replaceAll("\n",""),
   );
   const token = searchParams.get("token");
   const verifyTokenAPI = async (token: any) => {

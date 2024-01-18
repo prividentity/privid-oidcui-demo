@@ -17,6 +17,7 @@ const useWasm = (
 
   const { isWasmLoaded, setIsWasmLoaded } = context;
   const init = async () => {
+    console.log("init start");
     const res = await loadOidc({
       sessionToken,
       apiUrl,

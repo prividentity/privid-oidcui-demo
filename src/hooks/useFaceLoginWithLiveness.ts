@@ -5,7 +5,7 @@ import { useSearchParams } from "react-router-dom";
 
 let showError = false;
 const useFaceLoginWithLivenessCheck = (
-  setShowSuccess: any = () => {},
+  setCompleted: (isComplete: boolean) =>void,
   onSetStatus?: (e: number) => void,
   retryTimes = 3,
   isInitialPredict = true
@@ -28,6 +28,7 @@ const useFaceLoginWithLivenessCheck = (
   };
 
   const callback = async (result: any) => {
+    console.log("Predict Callback Result:", result)
     if (result.status !== "WASM_RESPONSE") {
       faceLoginWithLiveness();
       return;
@@ -59,7 +60,7 @@ const useFaceLoginWithLivenessCheck = (
       ...returnValue,
       retryComplete: !isInitialPredict && tries === retryTimes,
     });
-    setShowSuccess(returnValue);
+    setCompleted(true);
   };
 
   const handleInvalidImage = (returnValue: any) => {
@@ -78,7 +79,7 @@ const useFaceLoginWithLivenessCheck = (
       }
       faceLoginWithLiveness();
     } else {
-      setShowSuccess(returnValue);
+      setCompleted(true);
       setPredictData({
         ...returnValue,
         retryComplete: !isInitialPredict && tries === retryTimes,

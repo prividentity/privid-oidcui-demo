@@ -15,6 +15,8 @@ import { getStatusFromUser } from "utils";
 import Layout from "common/layout";
 import BackButton from "common/components/backButton";
 import CameraComponent from "common/components/camera";
+import { getTransactionResult } from "@privateid/ping-oidc-web-sdk-alpha";
+import { OidcContext } from "context/oidcContext";
 
 type Props = {
   heading?: string;
@@ -22,6 +24,7 @@ type Props = {
 
 function FaceLogin(Props: Props) {
   const context = useContext(UserContext);
+  const oidcContext = useContext(OidcContext);
   const { navigateWithQueryParams } = useNavigateWithQueryParams();
   const { isCameraGranted } = useCameraPermissions(() => {});
   const [completed, setCompleted] = useState(false);
@@ -31,15 +34,21 @@ function FaceLogin(Props: Props) {
     faceLoginWithLivenessMessage,
     faceLoginData,
     faceLoginResponseStatus,
-  } = useFaceLoginWithLivenessCheck(() => {}, onStatus, 50, false);
+  } = useFaceLoginWithLivenessCheck(setCompleted, onStatus, 50, false);
 
-  const onSuccess = () => {
-    context.setUser({
-      ...context.user,
-      uuid: faceLoginData?.puid,
-      guid: faceLoginData?.guid,
-    });
-    handelLoginResponse(faceLoginData);
+  const onSuccess = async () => {
+    // context.setUser({
+    //   ...context.user,
+    //   uuid: faceLoginData?.puid,
+    //   guid: faceLoginData?.guid,
+    // });
+    
+    const baseurl = process.env.REACT_APP_API_URL || "https://api.orchestration.private.id/oidc";
+      console.log("OIDC context", oidcContext);
+      console.log("URL", baseurl);
+      await getTransactionResult({token:oidcContext.transactionToken, baseUrl:  baseurl});
+  
+    // handelLoginResponse(faceLoginData);
   };
 
   const handelLoginResponse = async (result: any) => {

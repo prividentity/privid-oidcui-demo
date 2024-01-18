@@ -5,7 +5,7 @@ import { loadPrivIdModule as loadOidc } from "@privateid/ping-oidc-web-sdk-alpha
 
 let isLoading = false;
 const useWasm = (
-  sessionToken = "",
+  sessionToken = "aadasdsadas",
   apiUrl = "",
   publicKey = "",
   timeout = 0

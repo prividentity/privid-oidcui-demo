@@ -2,11 +2,11 @@
 import { SetStateAction, useEffect, useState } from "react";
 import {
   convertCroppedImage,
-  documentMugshotFaceCompare,
+  // documentMugshotFaceCompare,
   isValidPhotoID,
-} from "@privateid/cryptonets-web-sdk";
+} from "@privateid/ping-oidc-web-sdk-alpha";
 import { CANVAS_SIZE } from "../utils";
-import { DocType } from "@privateid/cryptonets-web-sdk/dist/types";
+import { documentImageTypeUpload } from "@privateid/ping-oidc-web-sdk-alpha";
 import Rerun from "../utils/reRuncheck";
 import { useToast } from "components/ui/use-toast";
 import { useNavigateWithQueryParams } from "utils/navigateWithQueryParams";
@@ -179,20 +179,20 @@ const useScanFrontDocument = (
         { croppedDocumentBase64 },
         enrollImageData
       );
-      const doCompare = async () => {
-        await documentMugshotFaceCompare(
-          faceCompareCallback,
-          croppedDocument,
-          enrollImageData,
-          {
-            input_image_format: "rgba",
-            // @ts-ignore
-            auto_zoom_disabled: false,
-          }
-        );
-      };
+      // const doCompare = async () => {
+      //   await documentMugshotFaceCompare(
+      //     faceCompareCallback,
+      //     croppedDocument,
+      //     enrollImageData,
+      //     {
+      //       input_image_format: "rgba",
+      //       // @ts-ignore
+      //       auto_zoom_disabled: false,
+      //     }
+      //   );
+      // };
       if (enrollImageData) {
-        doCompare();
+       // doCompare();
       } else {
         toast({
           variant: "destructive",
@@ -219,7 +219,8 @@ const useScanFrontDocument = (
     const canvasObj = canvasSize ? CANVAS_SIZE?.[canvasSize] : {};
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const result: any = await isValidPhotoID(
-      DocType.PHOTO_ID_FRONT,
+      // @ts-ignore
+      "front",
       initializeCanvas || documentCallback,
       undefined,
       {

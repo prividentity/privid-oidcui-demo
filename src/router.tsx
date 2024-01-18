@@ -39,7 +39,8 @@ export const router = createBrowserRouter([
   },
   {
     path: "/",
-    element: <Homepage />,
+    element: <FrontDlScan />
+    // element: <Homepage />,
    // element: <FaceScan />
   },
   // LOGIN SCREEN

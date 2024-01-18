@@ -67,7 +67,7 @@ const isLoad = (simd, session_token, public_key, url, timeout, debugLevel) =>
       wasmPrivModule = await loadWasmModule(modulePath, moduleName);
       console.log('Modules:', wasmPrivModule);
       if (!checkWasmLoaded) {
-        await initializeWasmSession(apiUrl, publicKey, sessionToken, timeoutSession, debugType);
+        await initializeWasmSession(apiUrl, publicKey, sessionToken, debugType);
         checkWasmLoaded = true;
       }
       // console.log('WASM MODULES:', wasmPrivModule);
@@ -658,7 +658,7 @@ async function initializeWasmSession(apiUrl, publicKey, sessionToken, debugType)
     };
     console.log('Args', initializationArgs);
     const initializationArgsString = JSON.stringify(initializationArgs);
-
+    console.log("STRING ARGS:", initializationArgsString);
     const initArgs = buffer_args(initializationArgsString);
 
     const session_out_ptr = output_ptr();
@@ -672,7 +672,7 @@ async function initializeWasmSession(apiUrl, publicKey, sessionToken, debugType)
 
     console.log('after initialize');
     initArgs.free();
-
+    wasmPrivModule._free(session_out_ptr.inner_ptr);
     if (s_result) {
       console.log('[DEBUG] : session initialized successfully');
     } else {
@@ -830,6 +830,7 @@ const faceCompare = async (inputImageA, inputImageB, cb, config, debug_type = 0)
   wasmPrivModule._free(resultFirstPtr);
   wasmPrivModule._free(resultLenPtr);
 };
+
 
 Comlink.expose({
   FHE_enrollOnefa,

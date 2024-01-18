@@ -53,7 +53,7 @@ function FaceScan(Props: Props) {
   //   }
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [enrollPortrait, enrollData]);
-
+  // something
   const onFaceSuccess = async () => {
     console.log("onFaceSuccess");
     setScanCompleted(true);

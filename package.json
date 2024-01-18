@@ -51,8 +51,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "prestart": "cp -R ./node_modules/@privateid/cryptonets-web-sdk/wasm public/&& cp -R ./node_modules/@privateid/cryptonets-web-sdk/workers public/ && cp -R ./node_modules/@privateid/ping-oidc-web-sdk-alpha/workers public/ && cp -R ./node_modules/@privateid/ping-oidc-web-sdk-alpha/wasm public/",
-    "postinstall": "cp -R ./node_modules/@privateid/cryptonets-web-sdk/wasm public/ && cp -R ./node_modules/@privateid/cryptonets-web-sdk/workers public/",
+    "prestart": "cp -R ./node_modules/@privateid/ping-oidc-web-sdk-alpha/workers public/ && cp -R ./node_modules/@privateid/ping-oidc-web-sdk-alpha/wasm public/",
+    "postinstall": "cp -R ./node_modules/@privateid/ping-oidc-web-sdk-alpha/workers public/ && cp -R ./node_modules/@privateid/ping-oidc-web-sdk-alpha/wasm public/",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

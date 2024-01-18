@@ -1,7 +1,6 @@
 // @ts-nocheck
 /* eslint-disable no-unused-vars */
 import { useState } from "react";
-// import { enroll1FA } from "@privateid/cryptonets-web-sdk";
 import { enroll1FA } from "@privateid/ping-oidc-web-sdk-alpha";
 import {
   getStatusMessage,

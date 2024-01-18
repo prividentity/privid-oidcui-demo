@@ -121,6 +121,7 @@ const useEnrollOneFaWithLiveness = (onSuccess) => {
       // setTimeout(() => {
       onSuccess(result.returnValue);
       setEnrollData(result.returnValue);
+      onSuccess(true);
       // }, 3000);
     } else if (result.returnValue.status === 0) {
       handleFailureCase(result, false);

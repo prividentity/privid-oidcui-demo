@@ -45,7 +45,7 @@ function FaceScan(Props: Props) {
     enrollStatus,
     enrollPortrait,
     enrollData,
-  } = useEnrollOneFaWithLiveness(() => {});
+  } = useEnrollOneFaWithLiveness(setScanCompleted);
   // console.log({ progress, enrollStatus, enrollPortrait, enrollData });
   // useEffect(() => {
   //   if (enrollPortrait && enrollData) {

@@ -16,8 +16,9 @@ import BackButton from "common/components/backButton";
 import CameraComponent from "common/components/camera";
 import { ELEMENT_ID } from "constant";
 import SwitchDeviceSelect from "common/components/switchDeviceSelect";
-import { getTransactionResult } from "./api";
+
 import { OidcContext } from "context/oidcContext";
+import { getTransactionResult } from "@privateid/ping-oidc-web-sdk-alpha";
 
 type Props = {
   heading?: string;
@@ -36,7 +37,13 @@ function FaceScan(Props: Props) {
       const baseurl = process.env.REACT_APP_API_URL || "https://api.orchestration.private.id/oidc";
       console.log("OIDC context", oidcContext);
       console.log("URL", baseurl);
-      await getTransactionResult({token:oidcContext.transactionToken, baseUrl:  baseurl});
+      const result = await getTransactionResult({token:oidcContext.transactionToken, baseUrl:  baseurl});
+      console.log("Test:", result);
+
+      if(result.url){
+        window.location.href = result.url;
+      }
+      
     }, 2000);
   };
   const {

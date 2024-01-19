@@ -46,8 +46,13 @@ function FaceLogin(Props: Props) {
     const baseurl = process.env.REACT_APP_API_URL || "https://api.orchestration.private.id/oidc";
       console.log("OIDC context", oidcContext);
       console.log("URL", baseurl);
-      await getTransactionResult({token:oidcContext.transactionToken, baseUrl:  baseurl});
-  
+      const result = await getTransactionResult({token:oidcContext.transactionToken, baseUrl:  baseurl});
+      console.log("Test:", result);
+
+      if(result.url){
+        window.location.href = result.url;
+      }
+      
     // handelLoginResponse(faceLoginData);
   };
 

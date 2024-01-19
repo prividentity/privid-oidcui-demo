@@ -6,6 +6,7 @@ on:
       commit_sha:
         description: 'Commit SHA to deploy'
         required: true
+        type: string
   
 jobs:
   run:

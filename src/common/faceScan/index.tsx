@@ -16,7 +16,7 @@ import BackButton from "common/components/backButton";
 import CameraComponent from "common/components/camera";
 import { ELEMENT_ID } from "constant";
 import SwitchDeviceSelect from "common/components/switchDeviceSelect";
-import { getTransactionResult } from "@privateid/ping-oidc-web-sdk-alpha";
+import { getTransactionResult } from "./api";
 import { OidcContext } from "context/oidcContext";
 
 type Props = {

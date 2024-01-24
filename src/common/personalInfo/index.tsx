@@ -11,7 +11,7 @@ import { Input } from "components/ui/input";
 import { useNavigateWithQueryParams } from "utils/navigateWithQueryParams";
 import { emailRegex } from "constant";
 import { UserContext } from "context/userContext";
-import { createUserWithSession } from "@privateid/cryptonets-web-sdk";
+
 import { useToast } from "components/ui/use-toast";
 import Layout from "common/layout";
 import BackButton from "common/components/backButton";
@@ -63,20 +63,20 @@ const PersonalInfo = (props: Props) => {
       ssn: ssn || undefined,
     };
     setLoader(true);
-    const userResult = await createUserWithSession(payload);
-    if (userResult?.error === "Not Acceptable") {
-      toast({
-        variant: "destructive",
-        description: userResult?.message,
-      });
-      setTimeout(() => {
-        navigate("/");
-      }, 2000);
-    }
-    setLoader(false);
-    if (userResult?.success) {
-      navigateWithQueryParams("/face-scan-intro");
-    }
+    // const userResult = await createUserWithSession(payload);
+    // if (userResult?.error === "Not Acceptable") {
+    //   toast({
+    //     variant: "destructive",
+    //     description: userResult?.message,
+    //   });
+    //   setTimeout(() => {
+    //     navigate("/");
+    //   }, 2000);
+    // }
+    // setLoader(false);
+    // if (userResult?.success) {
+    //   navigateWithQueryParams("/face-scan-intro");
+    // }
   };
   const onBlur = (type: string) => {
     switch (type) {

@@ -18,7 +18,6 @@ let privid_wasm_result = null;
 let wasmSession = null;
 let isSimd;
 
-
 let checkWasmLoaded = false;
 let wasmPrivAntispoofModule;
 let antispoofVersion;
@@ -52,27 +51,27 @@ const isLoad = (simd, session_token, public_key, url, timeout, debugLevel) =>
         fetchdVersion?.version
       }`}`,
     );
-    if (cachedModule && cachedModule?.version.toString() === fetchdVersion?.version.toString()) {
-      if (!wasmPrivModule) {
-        const { cachedWasm, cachedScript } = cachedModule;
-        eval(cachedScript);
-        wasmPrivModule = await createTFLiteModule({ wasmBinary: cachedWasm });
-        if (!checkWasmLoaded) {
-          await initializeWasmSession(apiUrl, publicKey, sessionToken, timeoutSession, debugType);
-          checkWasmLoaded = true;
-        }
-      }
-      resolve('Cache Loaded');
-    } else {
-      wasmPrivModule = await loadWasmModule(modulePath, moduleName);
-      console.log('Modules:', wasmPrivModule);
-      if (!checkWasmLoaded) {
-        await initializeWasmSession(apiUrl, publicKey, sessionToken, debugType);
-        checkWasmLoaded = true;
-      }
-      // console.log('WASM MODULES:', wasmPrivModule);
-      resolve('Loaded');
+    // if (cachedModule && cachedModule?.version.toString() === fetchdVersion?.version.toString()) {
+    //   if (!wasmPrivModule) {
+    //     const { cachedWasm, cachedScript } = cachedModule;
+    //     eval(cachedScript);
+    //     wasmPrivModule = await createTFLiteModule({ wasmBinary: cachedWasm });
+    //     if (!checkWasmLoaded) {
+    //       await initializeWasmSession(apiUrl, publicKey, sessionToken, timeoutSession, debugType);
+    //       checkWasmLoaded = true;
+    //     }
+    //   }
+    //   resolve('Cache Loaded');
+    // } else {
+    wasmPrivModule = await loadWasmModule(modulePath, moduleName);
+    console.log('Modules:', wasmPrivModule);
+    if (!checkWasmLoaded) {
+      await initializeWasmSession(apiUrl, publicKey, sessionToken, debugType);
+      checkWasmLoaded = true;
     }
+    // console.log('WASM MODULES:', wasmPrivModule);
+    resolve('Loaded');
+    // }
   });
 
 function flatten(arrays, TypedArray) {
@@ -290,6 +289,7 @@ const FHE_enrollOnefa = async (imageData, simd, config, cb) => {
   const imageInputSize = imageData.data.length * imageData.data.BYTES_PER_ELEMENT;
   const imageInputPtr = wasmPrivModule._malloc(imageInputSize);
   wasmPrivModule.HEAPU8.set(new Uint8Array(imageData.data), imageInputPtr);
+
   const resultFirstPtr = wasmPrivModule._malloc(Int32Array.BYTES_PER_ELEMENT);
   const resultLenPtr = wasmPrivModule._malloc(Int32Array.BYTES_PER_ELEMENT);
   const encoder = new TextEncoder();
@@ -338,6 +338,7 @@ const FHE_enrollOnefa = async (imageData, simd, config, cb) => {
   wasmPrivModule._free(configInputPtr);
   wasmPrivModule._free(bestImageFirstPtr);
   wasmPrivModule._free(bestImageLenPtr);
+  console.log('Best Image?', bestImage);
   return bestImage;
 };
 
@@ -658,7 +659,7 @@ async function initializeWasmSession(apiUrl, publicKey, sessionToken, debugType)
     };
     console.log('Args', initializationArgs);
     const initializationArgsString = JSON.stringify(initializationArgs);
-    console.log("STRING ARGS:", initializationArgsString);
+    console.log('STRING ARGS:', initializationArgsString);
     const initArgs = buffer_args(initializationArgsString);
 
     const session_out_ptr = output_ptr();
@@ -784,6 +785,7 @@ const faceCompare = async (inputImageA, inputImageB, cb, config, debug_type = 0)
   }
 
   // const version = wasmPrivModule._get_version();
+  console.log('params:', { inputImageA, inputImageB, config });
   const encoder = new TextEncoder();
   const config_bytes = encoder.encode(`${config}`);
 
@@ -791,19 +793,31 @@ const faceCompare = async (inputImageA, inputImageB, cb, config, debug_type = 0)
   const configInputPtr = wasmPrivModule._malloc(configInputSize);
   wasmPrivModule.HEAP8.set(config_bytes, configInputPtr / config_bytes.BYTES_PER_ELEMENT);
 
-  const imageInputASize = inputImageA.length * inputImageA.BYTES_PER_ELEMENT;
+  const imageInputASize = inputImageA.data.length * inputImageA.data.BYTES_PER_ELEMENT;
   const imageInputAPtr = wasmPrivModule._malloc(imageInputASize);
+  wasmPrivModule.HEAP8.set(new Uint8Array(inputImageA.data), imageInputAPtr);
 
-  wasmPrivModule.HEAP8.set(inputImageA, imageInputAPtr / inputImageA.BYTES_PER_ELEMENT);
+  // const imageInputSize = imageData.data.length * imageData.data.BYTES_PER_ELEMENT;
+  // const imageInputPtr = wasmPrivModule._malloc(imageInputSize);
+  // wasmPrivModule.HEAPU8.set(new Uint8Array(imageData.data), imageInputPtr);
 
-  const imageInputBSize = inputImageB.length * inputImageB.BYTES_PER_ELEMENT;
+  const imageInputBSize = inputImageB.data.length * inputImageB.data.BYTES_PER_ELEMENT;
   const imageInputBPtr = wasmPrivModule._malloc(imageInputBSize);
-
-  wasmPrivModule.HEAP8.set(inputImageB, imageInputBPtr / inputImageB.BYTES_PER_ELEMENT);
+  wasmPrivModule.HEAP8.set(new Uint8Array(inputImageB.data), imageInputBPtr);
 
   const resultFirstPtr = wasmPrivModule._malloc(Int32Array.BYTES_PER_ELEMENT);
   // create a pointer to interger to hold the length of the output buffer
   const resultLenPtr = wasmPrivModule._malloc(Int32Array.BYTES_PER_ELEMENT);
+  console.log({
+    configInputPtr,
+    configInputSize,
+    imageInputAPtr,
+    imageInputBPtr,
+    resultFirstPtr,
+    resultLenPtr,
+    inputImageA,
+    inputImageB,
+  });
 
   try {
     result = wasmPrivModule._privid_compare_mugshot_and_face(
@@ -816,6 +830,10 @@ const faceCompare = async (inputImageA, inputImageB, cb, config, debug_type = 0)
       imageInputBPtr,
       inputImageB.width,
       inputImageB.height,
+      null,
+      0,
+      null,
+      0,
       resultFirstPtr,
       resultLenPtr,
     );
@@ -831,6 +849,59 @@ const faceCompare = async (inputImageA, inputImageB, cb, config, debug_type = 0)
   wasmPrivModule._free(resultLenPtr);
 };
 
+// void privid_encrypt_data(void* session_ptr, const unsigned char* buffer, const int buffer_length, char** result_out, int* result_out_length)
+const pkiEnrcrypt = async (payload) => {
+  const encoder = new TextEncoder();
+  const payloadBytes = encoder.encode(`${payload}`);
+  const payloadInputSize = payloadBytes.length;
+  const payloadInputPtr = wasmPrivModule._malloc(payloadInputSize);
+
+  const resultFirstPtr = wasmPrivModule._malloc(Int32Array.BYTES_PER_ELEMENT);
+  // create a pointer to interger to hold the length of the output buffer
+  const resultLenPtr = wasmPrivModule._malloc(Int32Array.BYTES_PER_ELEMENT);
+  wasmPrivModule.HEAP8.set(payloadBytes, payloadInputPtr / payloadBytes.BYTES_PER_ELEMENT);
+  console.log('Payload:', payload);
+  let res = null;
+  try {
+    res = wasmPrivModule._privid_encrypt_data(
+      wasmSession /* session pointer */,
+      payloadInputPtr,
+      payloadInputSize,
+      resultFirstPtr /* operation result output buffer */,
+      resultLenPtr /* operation result buffer length */,
+    );
+  } catch (e) {
+    console.error('---------__E__-------', e);
+  }
+
+  console.log('Result?', res);
+
+  const [outputBufferSizes] = new Uint32Array(wasmPrivModule.HEAPU8.buffer, resultLenPtr, 1);
+
+  if (outputBufferSizes > 0) {
+    // de-reference & copy the data from pointer to integer in integer array of one element
+    const outputBufferSize = new Uint32Array(wasmPrivModule.HEAPU8.buffer, resultLenPtr, 1)[0];
+    const outputBufferSecPtr = new Uint32Array(wasmPrivModule.HEAPU8.buffer, resultFirstPtr, 1)[0];
+    const outputBufferPtr = new Uint8Array(wasmPrivModule.HEAPU8.buffer, outputBufferSecPtr, outputBufferSize);
+
+    var decoder = new TextDecoder("utf8");
+    var dec = decoder.decode(outputBufferPtr);
+    console.log("len:", dec.length)
+    dec.replace(/\0/g, '')
+    dec.replace(" ","");
+    console.log("test:", dec.length)
+    function removeNullBytes(str){
+      return str.split("").filter(char => char.codePointAt(0)).join("")
+    }
+    let parsedDec = JSON.stringify(removeNullBytes(dec));
+    console.log("parsed:", parsedDec )
+    let isObject = JSON.parse(parsedDec);
+    console.log("is object?", isObject)
+    return JSON.parse(isObject);
+  }
+
+  return { error:true }
+};
 
 Comlink.expose({
   FHE_enrollOnefa,
@@ -841,4 +912,5 @@ Comlink.expose({
   isValidBarCode,
   deleteUUID,
   faceCompare,
+  pkiEnrcrypt,
 });

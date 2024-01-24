@@ -1,9 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import Lottie from "lottie-react";
-import {
-  verifyIdWithSession,
-  verifySessionTokenV2,
-} from "@privateid/cryptonets-web-sdk";
 import faceID from "Animations/5-Verify/JSONs/Face_ID.json";
 import { Label } from "components/ui/label";
 import { useNavigateWithQueryParams } from "utils/navigateWithQueryParams";
@@ -13,42 +9,62 @@ import { getFirstRequirement } from "utils";
 import { ECHO, TELE } from "constant";
 import config from "config";
 import Layout from "common/layout";
+import { OidcContext } from "context/oidcContext";
+import { getTransactionResult } from "@privateid/ping-oidc-web-sdk-alpha";
 
 type Props = {};
 let loaded = false;
 const Waiting = (props: Props) => {
   const context = useContext(UserContext);
+  const oidcContext = useContext(OidcContext);
   const [percentage, setPercentage] = useState(0);
   const { navigateWithQueryParams } = useNavigateWithQueryParams();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const onVerify = async () => {
     loaded = true;
     console.log(26, { loaded });
-    await verifyIdWithSession({
-      sessionToken: context?.tokenParams,
+    // await verifyIdWithSession({
+    //   sessionToken: context?.tokenParams,
+    // });
+    // const verifyTokenRes = await verifySessionTokenV2({
+    //   sessionToken: context?.tokenParams,
+    // });
+    // enum tokenStatus {
+    //   PENDING = "PENDING",
+    //   SUCCESS = "SUCCESS",
+    //   FAILURE = "FAILURE",
+    //   REQUIRES_INPUT = "REQUIRES_INPUT",
+    // }
+    // if (verifyTokenRes.status === tokenStatus.SUCCESS) {
+    //   // Success
+    //   loaded = false;
+    //   navigateWithQueryParams("/generate-passkey");
+    //   await issueVC(verifyTokenRes.user, true);
+    // } else if (verifyTokenRes.status === tokenStatus.FAILURE) {
+    //   loaded = false;
+    //   navigateWithQueryParams("/failed");
+    // } else if (verifyTokenRes.status === tokenStatus.REQUIRES_INPUT) {
+    //   getRequirements(verifyTokenRes?.dueRequirements);
+    // } else if (verifyTokenRes.status === tokenStatus.PENDING) {
+    //   loaded = false;
+    //   navigateWithQueryParams("/failed");
+    // }
+  };
+
+  const goNext = async () => {
+    const baseurl =
+      process.env.REACT_APP_API_URL ||
+      "https://api.orchestration.private.id/oidc";
+    console.log("OIDC context", oidcContext);
+    console.log("URL", baseurl);
+    const result = await getTransactionResult({
+      token: oidcContext.transactionToken,
+      baseUrl: baseurl,
     });
-    const verifyTokenRes = await verifySessionTokenV2({
-      sessionToken: context?.tokenParams,
-    });
-    enum tokenStatus {
-      PENDING = "PENDING",
-      SUCCESS = "SUCCESS",
-      FAILURE = "FAILURE",
-      REQUIRES_INPUT = "REQUIRES_INPUT",
-    }
-    if (verifyTokenRes.status === tokenStatus.SUCCESS) {
-      // Success
-      loaded = false;
-      navigateWithQueryParams("/generate-passkey");
-      await issueVC(verifyTokenRes.user, true);
-    } else if (verifyTokenRes.status === tokenStatus.FAILURE) {
-      loaded = false;
-      navigateWithQueryParams("/failed");
-    } else if (verifyTokenRes.status === tokenStatus.REQUIRES_INPUT) {
-      getRequirements(verifyTokenRes?.dueRequirements);
-    } else if (verifyTokenRes.status === tokenStatus.PENDING) {
-      loaded = false;
-      navigateWithQueryParams("/failed");
+    console.log("Test:", result);
+
+    if (result.url) {
+      window.location.href = result.url;
     }
   };
 
@@ -58,6 +74,7 @@ const Waiting = (props: Props) => {
         setPercentage((prevPercentage) => prevPercentage + 1);
         if (percentage >= 99) {
           clearInterval(intervalId);
+          goNext();
         }
       }
     }, 50);

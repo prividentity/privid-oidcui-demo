@@ -1,17 +1,5 @@
-import { VerificationSessionPayload } from "@privateid/cryptonets-web-sdk";
 import identityAPI from "./orchestration";
 import cryptonetsAPI from "./index";
-
-export const createVerificationSession = async (
-  payload: VerificationSessionPayload
-) => {
-  try {
-    const result = await identityAPI.post(`/v2/verification-session`, payload);
-    return result;
-  } catch (err) {
-    return err;
-  }
-};
 
 export const updateDocumentUploadIdWithSession = async ({
   sessionToken,

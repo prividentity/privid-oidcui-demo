@@ -4,18 +4,20 @@ import lock from "../../../assets/lock.svg";
 import CameraComponent from "../../components/camera";
 import BackButton from "../../../common/components/backButton";
 import { useNavigateWithQueryParams } from "../../../utils/navigateWithQueryParams";
-import useScanFrontDocument from "../../../hooks/useScanFrontDocumentWithoutPredict";
+import useScanFrontDocument from "../../../hooks/useScanFrontDocument";
 import { useContext, useState } from "react";
 import { UserContext } from "../../../context/userContext";
+
 import {
-  createDocumentUploadIdTypeEnum,
-  createDocumentUploadIdWithSession,
+  uploadDocumentImage,
+  createDocumentDL,
   documentImageTypeEnum,
-  updateTypeEnum,
-  updateUserWithSession,
-  uploadDocumentImageWithSession,
-} from "@privateid/cryptonets-web-sdk";
+  pkiEncryptData,
+  updateUserDetails,
+} from "@privateid/ping-oidc-web-sdk-alpha";
+
 import SwitchDeviceSelect from "common/components/switchDeviceSelect";
+import { OidcContext } from "context/oidcContext";
 
 type Props = {
   heading?: string;
@@ -25,12 +27,13 @@ function FrontDlScan(Props: Props) {
   const { navigateWithQueryParams } = useNavigateWithQueryParams();
   const onFailCallback = () => {};
   const context: any = useContext(UserContext);
+  const oidcContext = useContext(OidcContext);
   const [completed, setCompleted] = useState(false);
   const onDocumentSuccess = () => {
     setTimeout(() => {
       navigateWithQueryParams("/drivers-licence-back-intro");
     }, 2000);
-  }
+  };
   const onSuccess = async (
     result:
       | {
@@ -49,39 +52,50 @@ function FrontDlScan(Props: Props) {
       portraitConfScore: compareScore,
     } = result;
     console.log({ inputImage, croppedDocument, croppedMugshot, compareScore });
-    const documentId = await createDocumentUploadIdWithSession({
-      documentType: createDocumentUploadIdTypeEnum.drivers_license,
-      sessionToken: context?.tokenParams,
+    const documentId = await createDocumentDL({
+      baseUrl: process.env.REACT_APP_API_URL || "",
+      token: oidcContext.transactionToken,
     });
 
     context.setUser({ ...context.user, documentId: documentId.id });
 
-    const payload = {
-      sessionToken: context?.tokenParams,
-      portrait_conf_score: compareScore.toFixed(2).toString(),
-      updateType: updateTypeEnum.compare,
-    };
+    const confScoreUpdatePayload = await pkiEncryptData({portrait_conf_score: compareScore.toFixed(2).toString()});
+    console.log("payload?", confScoreUpdatePayload);
+
     async function uploadAllImagesAndUpdateUser() {
       const promises = [
-        uploadDocumentImageWithSession({
-          sessionToken: context?.tokenParams,
-          documentImageType: documentImageTypeEnum.FRONT,
+        uploadDocumentImage({
+          baseUrl: process.env.REACT_APP_API_URL || "",
+          token: oidcContext.transactionToken,
           documentId: documentId.id,
-          imageString: inputImage,
+          params:{
+            type: documentImageTypeEnum.FRONTDLORIGINAL,
+            data: inputImage,
+          },
         }),
-        uploadDocumentImageWithSession({
-          sessionToken: context?.tokenParams,
-          documentImageType: documentImageTypeEnum.FRONT_CROPPED_DOCUMENT,
+        uploadDocumentImage({
+          baseUrl: process.env.REACT_APP_API_URL || "",
+          token: oidcContext.transactionToken,
           documentId: documentId.id,
-          imageString: croppedDocument,
+          params:{
+            type: documentImageTypeEnum.FRONTDLCROPPED,
+            data: croppedDocument,
+          },
         }),
-        uploadDocumentImageWithSession({
-          sessionToken: context?.tokenParams,
-          documentImageType: documentImageTypeEnum.FRONT_MUGSHOT,
+        uploadDocumentImage({
+          baseUrl: process.env.REACT_APP_API_URL || "",
+          token: oidcContext.transactionToken,
           documentId: documentId.id,
-          imageString: croppedMugshot,
+          params:{
+            type: documentImageTypeEnum.FRONTDLHEADSHOT,
+            data: croppedMugshot,
+          },
         }),
-        updateUserWithSession(payload),
+        updateUserDetails({
+          baseUrl: process.env.REACT_APP_API_URL || "",
+          token: oidcContext.transactionToken,
+          params: confScoreUpdatePayload
+        })
       ];
 
       await Promise.all(promises);
@@ -95,7 +109,6 @@ function FrontDlScan(Props: Props) {
       .catch((error) => {
         console.error("An error occurred:", error);
       });
-
   };
   const { scanFrontDocument, resultResponse, scanStatus } =
     useScanFrontDocument(

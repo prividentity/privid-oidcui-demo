@@ -7,13 +7,16 @@ import { useNavigateWithQueryParams } from "../../../utils/navigateWithQueryPara
 import useScanBackDocument from "../../../hooks/useScanBackDocument";
 import { useContext, useState } from "react";
 import { UserContext } from "../../../context/userContext";
+
 import {
   documentImageTypeEnum,
-  uploadDocumentImageWithSession,
-} from "@privateid/cryptonets-web-sdk";
-import { updateDocumentUploadIdWithSession } from "../../../services/api";
-import { getBackDocumentStatusMessage } from "@privateid/cryptonets-web-sdk/dist/utils";
+  uploadDocumentImage,
+  updateDocumentDetails,
+  pkiEncryptData,
+} from "@privateid/ping-oidc-web-sdk-alpha";
+import { getBackDocumentStatusMessage } from "@privateid/ping-oidc-web-sdk-alpha/dist/utils";
 import SwitchDeviceSelect from "common/components/switchDeviceSelect";
+import { OidcContext } from "context/oidcContext";
 
 type Props = {
   heading?: string;
@@ -23,37 +26,47 @@ function BackDlScan(Props: Props) {
   const { navigateWithQueryParams } = useNavigateWithQueryParams();
   const context: any = useContext(UserContext);
   const [completed, setCompleted] = useState(false);
+  const oidcContext = useContext(OidcContext);
+  const userContext = useContext(UserContext);
   const onSuccess = async (result: any) => {
     const { barcodeData, croppedDocument, croppedBarcode } = result;
     setCompleted(true);
     context.setUser({ ...context.user, barcodeData });
     async function uploadDocumentAndUpdateImages() {
+      const documentDetailsParam = await pkiEncryptData(barcodeData);
       const promises = [];
       promises.push(
-        updateDocumentUploadIdWithSession({
+        updateDocumentDetails({
+          baseUrl: process.env.REACT_APP_API_URL || "",
+          token: oidcContext.transactionToken,
           documentId: context?.user?.documentId,
-          sessionToken: context?.tokenParams,
-          content: JSON.stringify(barcodeData),
+          params: documentDetailsParam,
         })
       );
 
       if (croppedDocument) {
         promises.push(
-          uploadDocumentImageWithSession({
-            sessionToken: context?.tokenParams,
-            documentImageType: documentImageTypeEnum.BACK_CROPPED_DOCUMENT,
+          uploadDocumentImage({
+            baseUrl: process.env.REACT_APP_API_URL || "",
+            token: oidcContext.transactionToken,
             documentId: context?.user?.documentId,
-            imageString: croppedDocument,
+            params: {
+              type: documentImageTypeEnum.BACKDLORIGINAL,
+              data: croppedDocument,
+            },
           })
         );
       }
 
       promises.push(
-        uploadDocumentImageWithSession({
-          sessionToken: context?.tokenParams,
-          documentImageType: documentImageTypeEnum.BACK_BARCODE,
+        uploadDocumentImage({
+          baseUrl: process.env.REACT_APP_API_URL || "",
+          token: oidcContext.transactionToken,
           documentId: context?.user?.documentId,
-          imageString: croppedBarcode,
+          params: {
+            type: documentImageTypeEnum.BACKDLBARCODE,
+            data: croppedBarcode,
+          },
         })
       );
 

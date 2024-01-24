@@ -1,4 +1,4 @@
-import { closeCamera } from "@privateid/cryptonets-web-sdk";
+import { closeCamera } from "@privateid/ping-oidc-web-sdk-alpha";
 import { ELEMENT_ID } from "constant";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";

@@ -1,11 +1,11 @@
 // @ts-nocheck
 /* eslint-disable no-unused-vars */
-import { useState } from "react";
-import { enroll1FA } from "@privateid/ping-oidc-web-sdk-alpha";
+import { useEffect, useState } from "react";
+import { convertCroppedImage, enroll1FA } from "@privateid/ping-oidc-web-sdk-alpha";
 import {
   getStatusMessage,
   MessageType,
-} from "@privateid/cryptonets-web-sdk/dist/utils";
+} from "@privateid/ping-oidc-web-sdk-alpha";
 import Rerun from "../utils/reRuncheck";
 import { useSearchParams } from "react-router-dom";
 
@@ -39,8 +39,26 @@ const useEnrollOneFaWithLiveness = (onSuccess) => {
         // true || searchParams.get("skipAntispoof") === "true" || skipAntispoof,
       });
       if (bestImage) {
+        console.log(bestImage);
+        const image =  new ImageData(bestImage.imageData, bestImage.width, bestImage.height);
+        const convertImageToBase64 = async (
+          imageData: any,
+          width: any,
+          height: any,
+        ) => {
+          try {
+            if (imageData.length === width * height * 4) {
+              const imageBase64 = await convertCroppedImage(imageData, width, height);
+             return imageBase64;
+            }
+          } catch (e) {
+            console.log(e);
+          }
+        };
+        const getB64 = await convertImageToBase64(image.data, image.width, image.height);
+        console.log("Enroll Image:", getB64);
         setEnrollPortrait(
-          new ImageData(bestImage.imageData, bestImage.width, bestImage.height)
+          image
         );
       }
     } catch (e) {}
@@ -108,6 +126,9 @@ const useEnrollOneFaWithLiveness = (onSuccess) => {
       }
     }
   };
+
+  
+
 
   const callback = async (result) => {
     console.log("Enroll callback result:", result);

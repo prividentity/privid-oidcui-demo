@@ -5,7 +5,6 @@ import { Label } from "components/ui/label";
 import { Button } from "components/ui/button";
 import Layout from "common/layout";
 import config from "config";
-import { createVerificationSession } from "services/api";
 import { useContext, useState } from "react";
 import { useNavigateWithQueryParams } from "utils/navigateWithQueryParams";
 import { UserContext } from "context/userContext";
@@ -26,22 +25,21 @@ const Login = (props: Props) => {
       ...config?.clientConfig,
       productGroupId: config?.clientConfig?.productGroupId,
     };
-    const result: any = await createVerificationSession(payload);
     setLoader(false);
-    context.setTokenParams(result?.token?.replace("?", ""));
-    if (context?.themeHhs) {
-      navigate(
-        `/hhs-consent?token=${result?.token?.replace("?", "")}${
-          searchParams.get("skipAntispoof") ? "&skipAntispoof=true" : ""
-        }`
-      );
-    } else {
-      navigate(
-        `/user-consent?token=${result?.token?.replace("?", "")}${
-          searchParams.get("skipAntispoof") ? "&skipAntispoof=true" : ""
-        }`
-      );
-    }
+    // context.setTokenParams(result?.token?.replace("?", ""));
+    // if (context?.themeHhs) {
+    //   navigate(
+    //     `/hhs-consent?token=${result?.token?.replace("?", "")}${
+    //       searchParams.get("skipAntispoof") ? "&skipAntispoof=true" : ""
+    //     }`
+    //   );
+    // } else {
+    //   navigate(
+    //     `/user-consent?token=${result?.token?.replace("?", "")}${
+    //       searchParams.get("skipAntispoof") ? "&skipAntispoof=true" : ""
+    //     }`
+    //   );
+    // }
   };
   return (
     <Layout removeBorder={true} removeHeight={true}>

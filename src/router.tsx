@@ -39,7 +39,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/",
-    // element: <FrontDlScan />
+    // element: <BackDlScan />
     element: <Homepage />,
    // element: <FaceScan />
   },
@@ -127,11 +127,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/address",
-    element: <Address />,
+    element: <></>,
   },
   {
     path: "/ssn",
-    element: <SSN />,
+    element: <></>,
   },
   {
     path: "/waiting",

@@ -1,8 +1,9 @@
 import { SetStateAction, useEffect, useState } from "react";
 import {
   convertCroppedImage,
-  isValidPhotoID,
-} from "@privateid/cryptonets-web-sdk";
+  pkiEncryptData,
+  scanBackDocumentBarcode,
+} from "@privateid/ping-oidc-web-sdk-alpha";
 import { CANVAS_SIZE } from "../utils";
 
 const useScanBackDocument = (onSuccess: (e: any) => void) => {
@@ -29,11 +30,15 @@ const useScanBackDocument = (onSuccess: (e: any) => void) => {
 
   const [barcodeStatusCode, setBarcodeStatusCode] = useState(null);
 
-  const documentCallback = (result: any) => {
+  const documentCallback = async (result: any) => {
+    console.log("Document Result:", result);
     if (result.status === "WASM_RESPONSE") {
       setBarcodeStatusCode(result.returnValue.op_status);
-      if (result.returnValue.op_status === 0) {
+      if (result.returnValue.read_barcode_result === 0) {
         setScannedCodeData(result.returnValue);
+        const encrypResult = await pkiEncryptData(result.returnValue)
+
+        console.log("res?", encrypResult);
         const {
           crop_doc_width,
           crop_doc_height,
@@ -152,8 +157,7 @@ const useScanBackDocument = (onSuccess: (e: any) => void) => {
 
   const scanBackDocument = async (canvasSize?: any) => {
     const canvasObj = canvasSize ? CANVAS_SIZE?.[canvasSize] : {};
-    const allData = (await isValidPhotoID(
-      "PHOTO_ID_BACK" as any,
+    const allData = (await scanBackDocumentBarcode(
       documentCallback,
       undefined as any,
       // @ts-ignore

@@ -1,16 +1,11 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import lock from "assets/lock.svg";
 import useCameraPermissions from "hooks/useCameraPermissions";
 import { useNavigateWithQueryParams } from "utils/navigateWithQueryParams";
 import useEnrollOneFaWithLiveness from "hooks/useEnrollOneFaWithLiveness";
 import { UserContext } from "context/userContext";
-import {
-  closeCamera,
-  convertCroppedImage,
-  updateTypeEnum,
-  updateUserWithSession,
-  uploadEnrollImageWithSession,
-} from "@privateid/cryptonets-web-sdk";
+
+import { closeCamera } from "@privateid/ping-oidc-web-sdk-alpha";
 import Layout from "common/layout";
 import BackButton from "common/components/backButton";
 import CameraComponent from "common/components/camera";
@@ -33,16 +28,16 @@ function FaceScan(Props: Props) {
   const onSuccess = () => {
     setTimeout(async () => {
       await closeCamera(ELEMENT_ID);
-      // navigateWithQueryParams("/doc-selection");
-      const baseurl = process.env.REACT_APP_API_URL || "https://api.orchestration.private.id/oidc";
-      console.log("OIDC context", oidcContext);
-      console.log("URL", baseurl);
-      const result = await getTransactionResult({token:oidcContext.transactionToken, baseUrl:  baseurl});
-      console.log("Test:", result);
+      navigateWithQueryParams("/doc-selection");
+      // const baseurl = process.env.REACT_APP_API_URL || "https://api.orchestration.private.id/oidc";
+      // console.log("OIDC context", oidcContext);
+      // console.log("URL", baseurl);
+      // const result = await getTransactionResult({token:oidcContext.transactionToken, baseUrl:  baseurl});
+      // console.log("Test:", result);
 
-      if(result.url){
-        window.location.href = result.url;
-      }
+      // if(result.url){
+      //   window.location.href = result.url;
+      // }
       
     }, 2000);
   };
@@ -52,43 +47,22 @@ function FaceScan(Props: Props) {
     enrollStatus,
     enrollPortrait,
     enrollData,
-  } = useEnrollOneFaWithLiveness(setScanCompleted);
-  // console.log({ progress, enrollStatus, enrollPortrait, enrollData });
-  // useEffect(() => {
-  //   if (enrollPortrait && enrollData) {
-  //     onFaceSuccess();
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [enrollPortrait, enrollData]);
-  // something
+  } = useEnrollOneFaWithLiveness(()=>{});
+
+  useEffect(() => {
+    if (enrollPortrait && enrollData) {
+      onFaceSuccess();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enrollPortrait, enrollData]);
   const onFaceSuccess = async () => {
     console.log("onFaceSuccess");
-    setScanCompleted(true);
+   
     context.setUser({
       ...context.user,
-      uuid: enrollData?.puid,
-      guid: enrollData?.guid,
       enrollImageData: enrollPortrait,
     });
-    await updateUserWithSession({
-      sessionToken: context?.tokenParams,
-      updateType: updateTypeEnum.enroll,
-      uuid: enrollData?.puid,
-      guid: enrollData?.guid,
-    });
-
-    if (enrollPortrait) {
-      const enrollPortraitBase64 = await convertCroppedImage(
-        enrollPortrait.data,
-        enrollPortrait.width,
-        enrollPortrait.height
-      );
-      await uploadEnrollImageWithSession({
-        sessionToken: context?.tokenParams,
-        imageString: enrollPortraitBase64,
-      });
-      localStorage.setItem("uuid", JSON.stringify(enrollData?.puid || {}));
-    }
+    setScanCompleted(true);
   };
 
   const onCameraReady = () => {

@@ -3,8 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@privateid/cryptonets-web-sdk": "^3.3.1",
-    "@privateid/ping-oidc-web-sdk-alpha": "^1.0.9",
+    "@privateid/ping-oidc-web-sdk-alpha": "^1.0.10",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-dialog": "^1.0.5",
@@ -33,6 +32,7 @@
     "clsx": "^2.1.0",
     "cmdk": "^0.2.0",
     "cross-env": "^7.0.3",
+    "detect-browser": "^5.3.0",
     "lazysizes": "^5.3.2",
     "lottie-react": "^2.4.0",
     "lucide-react": "^0.297.0",

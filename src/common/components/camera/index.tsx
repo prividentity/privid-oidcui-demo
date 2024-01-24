@@ -12,7 +12,7 @@ import {
   ENROLL_CANVAS_RESOLUTION,
   REMOVE_GLASSES,
 } from "constant";
-import { switchCamera } from "@privateid/cryptonets-web-sdk";
+import { switchCamera } from "@privateid/ping-oidc-web-sdk-alpha";
 import {
   Select,
   SelectContent,

@@ -31,6 +31,38 @@ import IdentityConsent from "common/identityConsent";
 import HhsConsent from "common/hhsConsent";
 import VerifyPin from "common/verifyPin";
 import Homepage from "pages/Homepage";
+import ConfirmUser from "common/loginScreens/confirmUser";
+import { AuthProvider, TAuthConfig } from "react-oauth2-code-pkce";
+
+let authConfigRegister: TAuthConfig = {
+  clientId: process.env.REACT_APP_CLIENT_ID || "",
+  authorizationEndpoint: process.env.REACT_APP_OIDC_AUTH_URL || "",
+  tokenEndpoint: process.env.REACT_APP_OIDC_TOKEN_URL || "",
+  redirectUri: "https://oidc-ui.devel.privateid.com/callback",
+  scope: "openid privateid",
+  storageKeyPrefix: "action",
+  extraAuthParameters: {
+    code_challenge_method: "S256",
+    productGroupId: process.env.REACT_APP_PRODUCT_GROUP_ID || "",
+    actionFlow: "register",
+    prompt: "login",
+  },
+};
+
+let authConfigLogin: TAuthConfig = {
+  clientId: process.env.REACT_APP_CLIENT_ID || "",
+  authorizationEndpoint: process.env.REACT_APP_OIDC_AUTH_URL || "",
+  tokenEndpoint: process.env.REACT_APP_OIDC_TOKEN_URL || "",
+  redirectUri: "https://oidc-ui.devel.privateid.com/callback",
+  scope: "openid privateid",
+  storageKeyPrefix: "action",
+  extraAuthParameters: {
+    code_challenge_method: "S256",
+    productGroupId: process.env.REACT_APP_PRODUCT_GROUP_ID || "",
+    actionFlow: "login",
+    prompt: "login",
+  },
+};
 
 export const router = createBrowserRouter([
   {
@@ -40,8 +72,12 @@ export const router = createBrowserRouter([
   {
     path: "/",
     // element: <BackDlScan />
-    element: <Homepage />,
-   // element: <FaceScan />
+    element: (
+      // <AuthProvider authConfig={authConfigRegister}>
+      <Homepage />
+      // </AuthProvider>
+    ),
+    // element: <FaceScan />
   },
   // LOGIN SCREEN
   {
@@ -90,6 +126,10 @@ export const router = createBrowserRouter([
     element: <FaceScan />,
   },
   {
+    path: "/confirm-user",
+    element: <ConfirmUser />,
+  },
+  {
     path: "/doc-selection",
     element: <DocumentSelection />,
   },
@@ -127,11 +167,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/address",
-    element: <></>,
+    element: <Address />,
   },
   {
     path: "/ssn",
-    element: <></>,
+    element: <SSN />,
   },
   {
     path: "/waiting",

@@ -17,11 +17,18 @@ import Layout from "common/layout";
 import BackButton from "common/components/backButton";
 import { Landmark } from "lucide-react";
 import CloseButton from "common/components/closeButton";
+import { OidcContext } from "context/oidcContext";
+import {
+  pkiEncryptData,
+  updateUserDetails,
+} from "@privateid/ping-oidc-web-sdk-alpha";
+import { UrlJSON } from "constant/url";
 
 type Props = {};
 
 const PersonalInfo = (props: Props) => {
   const { setUser, tokenParams } = useContext(UserContext);
+  const oidcContext = useContext(OidcContext);
   const { navigateWithQueryParams } = useNavigateWithQueryParams();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -63,6 +70,14 @@ const PersonalInfo = (props: Props) => {
       ssn: ssn || undefined,
     };
     setLoader(true);
+
+    const encryptSsnPayload = await pkiEncryptData(payload);
+
+    const result = await updateUserDetails({
+      baseUrl: process.env.REACT_APP_API_URL || "",
+      token: oidcContext.transactionToken,
+      params: encryptSsnPayload,
+    });
     // const userResult = await createUserWithSession(payload);
     // if (userResult?.error === "Not Acceptable") {
     //   toast({
@@ -73,10 +88,10 @@ const PersonalInfo = (props: Props) => {
     //     navigate("/");
     //   }, 2000);
     // }
-    // setLoader(false);
-    // if (userResult?.success) {
-    //   navigateWithQueryParams("/face-scan-intro");
-    // }
+    setLoader(false);
+    if (result?.success) {
+      navigateWithQueryParams(UrlJSON.DocumentTypeSelection);
+    }
   };
   const onBlur = (type: string) => {
     switch (type) {
@@ -107,7 +122,7 @@ const PersonalInfo = (props: Props) => {
   const beforeMaskedStateChange = ({ nextState }: any) => {
     let newState = nextState;
     let value = nextState?.enteredString;
-    if (value?.length > 8 && value?.charAt(0) === '0') {
+    if (value?.length > 8 && value?.charAt(0) === "0") {
       value = value.slice(1);
       newState = { ...newState, value };
     }
@@ -151,6 +166,7 @@ const PersonalInfo = (props: Props) => {
                   onFocus={() => {
                     onBlur("phone");
                   }}
+
                 >
                   <Input
                     type="tel"

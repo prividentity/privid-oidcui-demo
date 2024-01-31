@@ -211,7 +211,7 @@ const UserConsent = () => {
           <Button
             className="w-full text-white bg-primary rounded-[24px] mt-4 hover:opacity-90 hover:bg-primary"
             disabled={!disable}
-            onClick={() => navigateWithQueryParams(UrlJSON.PreEnroll)}
+            onClick={() => navigateWithQueryParams(UrlJSON.Enroll)}
           >
             Continue
           </Button>

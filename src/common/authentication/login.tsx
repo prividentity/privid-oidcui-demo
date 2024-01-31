@@ -5,20 +5,23 @@ import { Label } from "components/ui/label";
 import { Button } from "components/ui/button";
 import Layout from "common/layout";
 import config from "config";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigateWithQueryParams } from "utils/navigateWithQueryParams";
 import { UserContext } from "context/userContext";
+import { AuthContext } from "react-oauth2-code-pkce";
 
 type Props = {
   isLogin?: boolean;
 };
 
 const Login = (props: Props) => {
+  const pkcContext = useContext(AuthContext);
   const [searchParams] = useSearchParams();
   const context = useContext(UserContext);
   const navigate = useNavigate();
   const { navigateWithQueryParams } = useNavigateWithQueryParams();
   const [loader, setLoader] = useState(false);
+
   const onRegister = async () => {
     setLoader(true);
     const payload: any = {
@@ -70,9 +73,11 @@ const Login = (props: Props) => {
           className="w-[65%] bg-primary rounded-[24px] text-[14px] hover:opacity-90 hover:bg-primary text-white max-md:w-[100%] max-md:max-w-[327px]"
           onClick={() => {
             if (props.isLogin) {
-              navigateWithQueryParams("/login-options");
+              // navigateWithQueryParams("/login-options");
+              pkcContext.login();
             } else {
-              onRegister();
+              // onRegister();
+              pkcContext.login();
             }
           }}
           disabled={loader}
@@ -86,18 +91,29 @@ const Login = (props: Props) => {
             ? "Don’t have an account?"
             : "Already have an account?"}
         </Label>
-        <Label
-          className="mt-[16px] text-[16px] font-[Google Sans] text-[#5283EC] hover:underline font-[500] ms-2 cursor-pointer"
-          onClick={() => {
-            if (props.isLogin) {
-              navigateWithQueryParams("/");
-            } else {
-              navigateWithQueryParams("/login");
-            }
-          }}
-        >
-          {props.isLogin ? "Register" : "Log in"}
-        </Label>
+
+        {/* {props.isLogin ? ( */}
+          <Label
+            className="mt-[16px] text-[16px] font-[Google Sans] text-[#5283EC] hover:underline font-[500] ms-2 cursor-pointer"
+            onClick={() => {
+              if (props.isLogin) {
+                navigateWithQueryParams("/");
+              } else {
+                navigateWithQueryParams("/login", {action:"login"});
+
+                // window.location.href = "/login?action=login" ;
+              }
+            }}
+          >
+            {props.isLogin ? "Register" : "Log in"}
+          </Label>
+        {/* // ) : (
+        //   <a href="/login?action=login">
+        //     <Label className="mt-[16px] text-[16px] font-[Google Sans] text-[#5283EC] hover:underline font-[500] ms-2 cursor-pointer">
+        //       Log in
+        //     </Label>
+        //   </a>
+        // )} */}
       </div>
       <div className="flex justify-center mt-10">
         <ul className="flex justify-between w-[50%] max-md:w-[80%]">

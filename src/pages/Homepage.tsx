@@ -7,8 +7,13 @@ import {
   getPublicKey,
   getTokenDetails,
 } from "@privateid/ping-oidc-web-sdk-alpha";
+import { AuthContext, IAuthContext } from "react-oauth2-code-pkce";
+
+// import { Issuer, generators } from "openid-client";
 
 const Homepage = () => {
+  const authContext = useContext<IAuthContext>(AuthContext);
+  console.log("auth Context: ",authContext);
   const [displayHomepage, setDisplayHomepage] = useState(false);
 
   const navigate = useNavigate();

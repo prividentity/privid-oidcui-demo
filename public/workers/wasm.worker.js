@@ -903,6 +903,76 @@ const pkiEnrcrypt = async (payload) => {
   return { error:true }
 };
 
+
+const confirmUserOnSwitch = async (originalImages, simd, config, cb) => {
+  privid_wasm_result = cb;
+  if (!wasmPrivModule) {
+    await isLoad(simd, sessionToken, publicKey, apiUrl, timeout, debugType);
+  }
+
+  const numImages = originalImages.length;
+  const imageInput = flatten(
+    originalImages.map((x) => x.data),
+    Uint8Array,
+  );
+  // const version = wasmPrivModule._get_version();
+
+  const encoder = new TextEncoder();
+  const config_bytes = encoder.encode(`${config}`);
+
+  const configInputSize = config.length;
+  const configInputPtr = wasmPrivModule._malloc(configInputSize);
+  wasmPrivModule.HEAP8.set(config_bytes, configInputPtr / config_bytes.BYTES_PER_ELEMENT);
+
+  const imageInputSize = imageInput.length * imageInput.BYTES_PER_ELEMENT;
+  const imageInputPtr = wasmPrivModule._malloc(imageInputSize);
+
+  wasmPrivModule.HEAP8.set(imageInput, imageInputPtr / imageInput.BYTES_PER_ELEMENT);
+
+  const resultFirstPtr = wasmPrivModule._malloc(Int32Array.BYTES_PER_ELEMENT);
+  // create a pointer to interger to hold the length of the output buffer
+  const resultLenPtr = wasmPrivModule._malloc(Int32Array.BYTES_PER_ELEMENT);
+  console.log('Config:', config);
+  try {
+    await wasmPrivModule._privid_confirm_user(
+      wasmSession /* session pointer */,
+      configInputPtr,
+      configInputSize,
+      imageInputPtr /* input images */,
+      numImages /* number of input images */,
+      originalImages[0].data.length /* size of one image */,
+      originalImages[0].width /* width of one image */,
+      originalImages[0].height /* height of one image */,
+      resultFirstPtr /* operation result output buffer */,
+      resultLenPtr /* operation result buffer length */,
+    );
+  } catch (e) {
+    console.error('---------__E__-------', e);
+  }
+
+  let bestImage;
+
+  const [outputBufferSize] = new Uint32Array(wasmPrivModule.HEAPU8.buffer, resultFirstPtr, 1);
+
+  if (outputBufferSize > 0) {
+    let outputBufferSecPtr = null;
+    [outputBufferSecPtr] = new Uint32Array(wasmPrivModule.HEAPU8.buffer, bestImageFirstPtr, 1);
+    const outputBufferPtr = new Uint8Array(wasmPrivModule.HEAPU8.buffer, outputBufferSecPtr, outputBufferSize);
+    const outputBuffer = Uint8ClampedArray.from(outputBufferPtr);
+    const outputBufferData = outputBufferSize > 0 ? outputBuffer : null;
+    bestImage = { imageData: outputBufferData, width: imageData.width, height: imageData.height };
+  }
+
+  wasmPrivModule._free(imageInputPtr);
+  wasmPrivModule._free(resultFirstPtr);
+  wasmPrivModule._free(resultLenPtr);
+  wasmPrivModule._free(configInputPtr);
+  wasmPrivModule._free(resultFirstPtr);
+  wasmPrivModule._free(resultLenPtr);
+  console.log('Best Image?', bestImage);
+  return bestImage;
+};
+
 Comlink.expose({
   FHE_enrollOnefa,
   FHE_predictOnefa,
@@ -913,4 +983,5 @@ Comlink.expose({
   deleteUUID,
   faceCompare,
   pkiEnrcrypt,
+  confirmUserOnSwitch,
 });

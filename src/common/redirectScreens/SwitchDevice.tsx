@@ -26,6 +26,8 @@ import Layout from "common/layout";
 import BackButton from "common/components/backButton";
 import { UserContext } from "context/userContext";
 import CloseButton from "common/components/closeButton";
+import { OidcContext } from "context/oidcContext";
+import { getTokenDetails } from "@privateid/ping-oidc-web-sdk-alpha";
 type Props = {
   resendCode?: boolean;
   limitFailed?: boolean;
@@ -44,7 +46,7 @@ function SwitchDevice(props: Props) {
   const [isResendDisabled, setIsResendDisabled] = useState(false);
   const [smsLimit, setSmsLimit] = useState(0);
   const [searchParams] = useSearchParams();
-  const tokenParams: any = searchParams.get("token");
+  const oidcContext = useContext(OidcContext);
 
   useEffect(() => {
     let interval: any;
@@ -95,9 +97,14 @@ function SwitchDevice(props: Props) {
     setLoading(false);
     setEmail("");
   };
-
+  const baseurl =
+    process.env.REACT_APP_API_URL ||
+    "https://api.orchestration.private.id/oidc";
   useInterval(() => {
-    verifyTokenApi(tokenParams).then(async (res: any) => {
+    getTokenDetails({
+      baseUrl: baseurl,
+      token: oidcContext.transactionToken,
+    }).then(async (res: any) => {
       // navigateWithQueryParams('/redirected-mobile')
       if (["SUCCESS", "FAILURE"].includes(res.status)) {
         setRefreshInterval(null);
@@ -105,12 +112,10 @@ function SwitchDevice(props: Props) {
           const payload = {
             id: res.user,
           };
-          const data: any = await getUser(payload);
-          localStorage.setItem("uuid", JSON.stringify(data.user.uuid || {}));
-          successSessionRedirect(tokenParams, false, false);
+          // successSessionRedirect(, false, false);
           // setStep(STEPS.PASSKEY);
         } else {
-          failureSessionRedirect(tokenParams, false);
+          // failureSessionRedirect(tokenParams, false);
           // setStep(STEPS.FAILURE);
         }
       }
@@ -149,7 +154,11 @@ function SwitchDevice(props: Props) {
 
   const from = searchParams.get("from");
   const urlForRedirect =
-    window.location.origin + from + "?token=" + tokenParams;
+    window.location.origin +
+    "/confirm-user" +
+    +"?transactionToken=" +
+    oidcContext.transactionToken;
+  //  window.location.origin + from + "?transactionToken=" + oidcContext.transactionToken;
 
   return (
     <>

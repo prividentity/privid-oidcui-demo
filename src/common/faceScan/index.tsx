@@ -14,6 +14,7 @@ import SwitchDeviceSelect from "common/components/switchDeviceSelect";
 
 import { OidcContext } from "context/oidcContext";
 import { getTransactionResult } from "@privateid/ping-oidc-web-sdk-alpha";
+import { UrlJSON } from "constant/url";
 
 type Props = {
   heading?: string;
@@ -28,7 +29,7 @@ function FaceScan(Props: Props) {
   const onSuccess = () => {
     setTimeout(async () => {
       await closeCamera(ELEMENT_ID);
-      navigateWithQueryParams("/doc-selection");
+      navigateWithQueryParams(UrlJSON.DocumentTypeSelection);
       // const baseurl = process.env.REACT_APP_API_URL || "https://api.orchestration.private.id/oidc";
       // console.log("OIDC context", oidcContext);
       // console.log("URL", baseurl);

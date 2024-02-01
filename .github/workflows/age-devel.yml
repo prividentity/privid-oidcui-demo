@@ -17,6 +17,10 @@ jobs:
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       SKIP_PREFLIGHT_CHECK: true
       REACT_APP_API_URL: https://api.orchestration.private.id/oidc
+      REACT_APP_CLIENT_ID: A1sq0HVPNLhgpTCwRl_ut
+      REACT_APP_PRODUCT_GROUP_ID: test101
+      REACT_APP_OIDC_AUTH_URL: https://oidc.privateid.com/auth
+      REACT_APP_OIDC_TOKEN_URL: https://oidc.privateid.com/token
       CI: false
 
     steps:

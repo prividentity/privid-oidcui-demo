@@ -91,7 +91,7 @@ function ConfirmUser(Props: Props) {
 
   useEffect(() => {
     getTransactionDetails();
-  });
+  },[]);
 
   const handelLoginResponse = async (result: any) => {
     if (result?.status === 0) {

@@ -81,6 +81,8 @@ function Address(Props: Props) {
         params: encryptedAddressPayload
   });
     if (addressResult?.success) {
+      navigateWithQueryParams("/waiting");
+
       // await verifyIdWithSession({
       //   sessionToken: context?.tokenParams,
       // });

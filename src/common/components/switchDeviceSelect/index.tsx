@@ -7,7 +7,7 @@ const SwitchDeviceSelect = () => {
   const { navigateWithQueryParams } = useNavigateWithQueryParams();
   const location = useLocation();
   return (
-    <div className="mt-0 text-primary text-[14px] cursor-pointer block text-center mb-5 max-lg:hidden">
+    <div className="mt-0 text-primary text-[14px] cursor-pointer block text-center mb-5 max-md:hidden">
       <Label className="font-[400] text-secondaryText text-[16px]">
         Having problems?
       </Label>

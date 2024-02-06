@@ -28,11 +28,11 @@ const options = [
     value: "passport",
     img: PassportIcon,
   },
-  {
-    label: "Health Insurance Card",
-    value: "health-insurance-card",
-    img: DriversLicense,
-  },
+  // {
+  //   label: "Health Insurance Card",
+  //   value: "health-insurance-card",
+  //   img: DriversLicense,
+  // },
   {
     label: "I’ll fill out personal information myself",
     value: "self",

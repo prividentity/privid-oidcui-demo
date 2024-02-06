@@ -950,13 +950,13 @@ const confirmUserOnSwitch = async (originalImages, simd, config, cb) => {
     console.error('---------__E__-------', e);
   }
 
-  let bestImage;
+  let bestImage = null;
 
   const [outputBufferSize] = new Uint32Array(wasmPrivModule.HEAPU8.buffer, resultFirstPtr, 1);
 
   if (outputBufferSize > 0) {
     let outputBufferSecPtr = null;
-    [outputBufferSecPtr] = new Uint32Array(wasmPrivModule.HEAPU8.buffer, bestImageFirstPtr, 1);
+    [outputBufferSecPtr] = new Uint32Array(wasmPrivModule.HEAPU8.buffer, resultFirstPtr, 1);
     const outputBufferPtr = new Uint8Array(wasmPrivModule.HEAPU8.buffer, outputBufferSecPtr, outputBufferSize);
     const outputBuffer = Uint8ClampedArray.from(outputBufferPtr);
     const outputBufferData = outputBufferSize > 0 ? outputBuffer : null;

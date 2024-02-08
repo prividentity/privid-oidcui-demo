@@ -23,6 +23,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       await AuthService.completeLogin();
       const user = await AuthService.getUser();
+      console.log("USER?", user);
       if (user) {
         sessionStorage.setItem(
           "tokens",

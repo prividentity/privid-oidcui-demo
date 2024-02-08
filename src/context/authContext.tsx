@@ -3,10 +3,10 @@ import React, { createContext, useContext, useState } from "react";
 import AuthService from "./authService";
 
 const AuthContext = createContext({
-    login: () => {},
-    isAuthenticated: false,
-    completeLogin: ()=> {},
-    tokens: {idToken: "", accessToken: ""},
+  login: () => {},
+  isAuthenticated: false,
+  completeLogin: () => {},
+  tokens: { idToken: "", accessToken: "" },
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -31,8 +31,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             accessToken: user.access_token,
           })
         );
-        window.location.href = "/"; // Redirect to home page
+        setAuthState({
+          isAuthenticated: true,
+          tokens: {
+            idToken: user.id_token,
+            accessToken: user.access_token,
+          },
+        });
       }
+
+      //  window.location.href = "/"; // Redirect to home page
     } catch (error) {
       console.error("An error occurred during login completion:", error);
       // Handle error appropriately
@@ -49,7 +57,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider
-    // @ts-ignore
+      // @ts-ignore
       value={{ ...authState, login, completeLogin, logout }}
     >
       {children}

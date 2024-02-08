@@ -4,9 +4,9 @@ import { useAuth } from "../context/authContext";
 const LoginCallback = () => {
   const { completeLogin, tokens, isAuthenticated } = useAuth();
 
-//   useEffect(() => {
-//     completeLogin();
-//   }, [completeLogin]);
+  useEffect(() => {
+    completeLogin();
+  }, [completeLogin]);
 
   return (
     <div>

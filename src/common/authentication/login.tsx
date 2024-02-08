@@ -9,6 +9,7 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigateWithQueryParams } from "utils/navigateWithQueryParams";
 import { UserContext } from "context/userContext";
 import { AuthContext } from "react-oauth2-code-pkce";
+import { useAuth } from "context/authContext";
 
 type Props = {
   isLogin?: boolean;
@@ -22,6 +23,29 @@ const Login = (props: Props) => {
   const { navigateWithQueryParams } = useNavigateWithQueryParams();
   const [loader, setLoader] = useState(false);
 
+  const { login } = useAuth();
+  const [decodedIdToken, setDecodedIdToken] = useState(null);
+  const [uuid, setUuid] = useState(null);
+
+  const handleLogin = () => {
+      const extraParams = {
+          productGroupId: 'test101',
+          actionFlow: 'login',
+          prompt: 'login',
+      };
+      //@ts-ignore
+      login(extraParams);
+  };
+
+  const handleRegister = () => {
+      const extraParams = {
+          productGroupId: 'test101',
+          actionFlow: 'register',
+          prompt: 'login',
+      };
+        //@ts-ignore
+      login(extraParams);
+  };
   const onRegister = async () => {
     setLoader(true);
     const payload: any = {
@@ -74,10 +98,12 @@ const Login = (props: Props) => {
           onClick={() => {
             if (props.isLogin) {
               // navigateWithQueryParams("/login-options");
-              pkcContext.login();
+             //  pkcContext.login();
+             handleLogin();
             } else {
               // onRegister();
-              pkcContext.login();
+              // pkcContext.login();
+              handleRegister();
             }
           }}
           disabled={loader}

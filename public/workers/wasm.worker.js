@@ -929,9 +929,8 @@ const confirmUserOnSwitch = async (originalImages, simd, config, cb) => {
 
   wasmPrivModule.HEAP8.set(imageInput, imageInputPtr / imageInput.BYTES_PER_ELEMENT);
 
-  const resultFirstPtr = wasmPrivModule._malloc(Int32Array.BYTES_PER_ELEMENT);
-  // create a pointer to interger to hold the length of the output buffer
-  const resultLenPtr = wasmPrivModule._malloc(Int32Array.BYTES_PER_ELEMENT);
+  const bestImageFirstPtr = wasmPrivModule._malloc(Int32Array.BYTES_PER_ELEMENT);
+  const bestImageLenPtr = wasmPrivModule._malloc(Int32Array.BYTES_PER_ELEMENT);
   console.log('Config:', config);
   try {
     await wasmPrivModule._privid_confirm_user(
@@ -939,12 +938,14 @@ const confirmUserOnSwitch = async (originalImages, simd, config, cb) => {
       configInputPtr,
       configInputSize,
       imageInputPtr /* input images */,
-      numImages /* number of input images */,
-      originalImages[0].data.length /* size of one image */,
+      // numImages /* number of input images */,
+     // originalImages[0].data.length /* size of one image */,
       originalImages[0].width /* width of one image */,
       originalImages[0].height /* height of one image */,
-      resultFirstPtr /* operation result output buffer */,
-      resultLenPtr /* operation result buffer length */,
+      bestImageFirstPtr /* operation result output buffer */,
+      bestImageLenPtr /* operation result buffer length */,
+      null,
+      0
     );
   } catch (e) {
     console.error('---------__E__-------', e);
@@ -952,23 +953,21 @@ const confirmUserOnSwitch = async (originalImages, simd, config, cb) => {
 
   let bestImage = null;
 
-  const [outputBufferSize] = new Uint32Array(wasmPrivModule.HEAPU8.buffer, resultFirstPtr, 1);
+  const [outputBufferSize] = new Uint32Array(wasmPrivModule.HEAPU8.buffer, bestImageLenPtr, 1);
 
   if (outputBufferSize > 0) {
     let outputBufferSecPtr = null;
-    [outputBufferSecPtr] = new Uint32Array(wasmPrivModule.HEAPU8.buffer, resultFirstPtr, 1);
+    [outputBufferSecPtr] = new Uint32Array(wasmPrivModule.HEAPU8.buffer, bestImageFirstPtr, 1);
     const outputBufferPtr = new Uint8Array(wasmPrivModule.HEAPU8.buffer, outputBufferSecPtr, outputBufferSize);
     const outputBuffer = Uint8ClampedArray.from(outputBufferPtr);
     const outputBufferData = outputBufferSize > 0 ? outputBuffer : null;
-    bestImage = { imageData: outputBufferData, width: imageData.width, height: imageData.height };
+    bestImage = { imageData: outputBufferData, width: originalImages[0].width, height: originalImages[0].height };
   }
 
   wasmPrivModule._free(imageInputPtr);
-  wasmPrivModule._free(resultFirstPtr);
-  wasmPrivModule._free(resultLenPtr);
   wasmPrivModule._free(configInputPtr);
-  wasmPrivModule._free(resultFirstPtr);
-  wasmPrivModule._free(resultLenPtr);
+  wasmPrivModule._free(bestImageFirstPtr);
+  wasmPrivModule._free(bestImageLenPtr);
   console.log('Best Image?', bestImage);
   return bestImage;
 };

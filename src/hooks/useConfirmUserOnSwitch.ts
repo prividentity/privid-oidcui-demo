@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // import { faceLogin } from "@privateid/cryptonets-web-sdk";
-import { confirmUser } from "@privateid/ping-oidc-web-sdk-alpha";
+import { confirmUser, convertCroppedImage } from "@privateid/ping-oidc-web-sdk-alpha";
 import { useSearchParams } from "react-router-dom";
 
 let showError = false;
@@ -27,6 +27,8 @@ const useConfirmUserOnSwitch = (
     });
     setFaceLoginInputImageData(inputImage);
   };
+
+
 
   const callback = async (result: any) => {
     console.log("Confirm User Callback Result:", result)
@@ -91,6 +93,31 @@ const useConfirmUserOnSwitch = (
       tries = 0;
     }
   };
+
+  const convertImageToBase64 = async (
+    imageData: any,
+    width: any,
+    height: any,
+  ) => {
+    try {
+      console.log("test?", imageData);
+      if (imageData.length === width * height * 4) {
+        const imageBase64 = await convertCroppedImage(imageData, width, height);
+        console.log("Confirm User Image:", imageBase64);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(()=>{
+    if(faceLoginInputImageData){
+      console.log("function pass:", faceLoginInputImageData)
+      convertImageToBase64(faceLoginInputImageData?.imageData, faceLoginInputImageData?.width, faceLoginInputImageData?.height);
+    }
+  },[faceLoginInputImageData])
+
+
   const resetFaceLogin = (callFunc = true) => {
     setPredictData(undefined);
     setFaceLoginInputImageData(null);

@@ -33,6 +33,7 @@ import VerifyPin from "common/verifyPin";
 import Homepage from "pages/Homepage";
 import ConfirmUser from "common/loginScreens/confirmUser";
 import { AuthProvider, TAuthConfig } from "react-oauth2-code-pkce";
+import LoginCallback from "pages/Callback";
 
 let authConfigRegister: TAuthConfig = {
   clientId: process.env.REACT_APP_CLIENT_ID || "",
@@ -203,4 +204,10 @@ export const router = createBrowserRouter([
     path: "/failure",
     element: <FailureScreen buttonLabel="Rescan" heading="passport" />,
   },
+
+  // OIDC Callback
+  {
+    path:"/callback",
+    element: <LoginCallback />
+  }
 ]);

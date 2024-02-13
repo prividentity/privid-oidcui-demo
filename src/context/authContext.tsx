@@ -25,6 +25,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const user = await AuthService.getUser();
       console.log("USER?", user);
       if (user) {
+        // sessionStorage.clear();
         sessionStorage.setItem(
           "tokens",
           JSON.stringify({

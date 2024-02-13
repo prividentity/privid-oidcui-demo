@@ -25,6 +25,28 @@ const ModuleName = 'face_mask';
 
 let useCdnLink = false;
 
+// const loadWasmModule = async (modulePath, moduleName, saveCache) => {
+//   const wasm = await fetchResource(
+//     `${cdnUrl}/wasm/face_mask/${modulePath}/${moduleName}.wasm`,
+//     `../wasm/face_mask/${modulePath}/${moduleName}.wasm`,
+//   );
+//   const script = await fetchResource(
+//     `${cdnUrl}/wasm/face_mask/${modulePath}/${moduleName}.js`,
+//     `../wasm/face_mask/${modulePath}/${moduleName}.js`,
+//   );
+//   // const wasm = await fetch(`../wasm/face_mask/${modulePath}/${moduleName}.wasm`);
+//   // const script = await fetch(`../wasm/face_mask/${modulePath}/${moduleName}.js`);
+//   const scriptBuffer = await script.text();
+//   const buffer = await wasm.arrayBuffer();
+//   eval(scriptBuffer);
+//   const module = await createTFLiteModule({ wasmBinary: buffer });
+//   if (saveCache) {
+//     const version = module.UTF8ToString(module._privid_get_version());
+//     await putKey('face_mask', buffer, scriptBuffer, version);
+//   }
+//   return module;
+// };
+
 const isLoad = (simd, session_token, public_key, url, timeout, debugLevel) =>
   new Promise(async (resolve, reject) => {
     apiUrl = url;
@@ -51,27 +73,27 @@ const isLoad = (simd, session_token, public_key, url, timeout, debugLevel) =>
         fetchdVersion?.version
       }`}`,
     );
-    // if (cachedModule && cachedModule?.version.toString() === fetchdVersion?.version.toString()) {
-    //   if (!wasmPrivModule) {
-    //     const { cachedWasm, cachedScript } = cachedModule;
-    //     eval(cachedScript);
-    //     wasmPrivModule = await createTFLiteModule({ wasmBinary: cachedWasm });
-    //     if (!checkWasmLoaded) {
-    //       await initializeWasmSession(apiUrl, publicKey, sessionToken, timeoutSession, debugType);
-    //       checkWasmLoaded = true;
-    //     }
-    //   }
-    //   resolve('Cache Loaded');
-    // } else {
-    wasmPrivModule = await loadWasmModule(modulePath, moduleName);
-    console.log('Modules:', wasmPrivModule);
-    if (!checkWasmLoaded) {
-      await initializeWasmSession(apiUrl, publicKey, sessionToken, debugType);
-      checkWasmLoaded = true;
+    if (cachedModule && cachedModule?.version.toString() === fetchdVersion?.version.toString()) {
+      if (!wasmPrivModule) {
+        const { cachedWasm, cachedScript } = cachedModule;
+        eval(cachedScript);
+        wasmPrivModule = await createTFLiteModule({ wasmBinary: cachedWasm });
+        if (!checkWasmLoaded) {
+          await initializeWasmSession(apiUrl, publicKey, sessionToken, timeoutSession, debugType);
+          checkWasmLoaded = true;
+        }
+      }
+      resolve('Cache Loaded');
+    } else {
+      wasmPrivModule = await loadWasmModule(modulePath, moduleName);
+      console.log('Modules:', wasmPrivModule);
+      if (!checkWasmLoaded) {
+        await initializeWasmSession(apiUrl, publicKey, sessionToken, debugType);
+        checkWasmLoaded = true;
+      }
+      console.log('WASM MODULES:', wasmPrivModule);
+      resolve('Loaded');
     }
-    // console.log('WASM MODULES:', wasmPrivModule);
-    resolve('Loaded');
-    // }
   });
 
 function flatten(arrays, TypedArray) {
@@ -767,7 +789,10 @@ const loadWasmModule = async (modulePath, moduleName) => {
   const buffer = await wasm.arrayBuffer();
   eval(scriptBuffer);
   const module = await createTFLiteModule({ wasmBinary: buffer });
-
+  // if (saveCache) {
+  const version = module.UTF8ToString(module._privid_get_version());
+  await putKey('face_mask', buffer, scriptBuffer, version);
+  // }
   return module;
 };
 
@@ -884,25 +909,27 @@ const pkiEnrcrypt = async (payload) => {
     const outputBufferSecPtr = new Uint32Array(wasmPrivModule.HEAPU8.buffer, resultFirstPtr, 1)[0];
     const outputBufferPtr = new Uint8Array(wasmPrivModule.HEAPU8.buffer, outputBufferSecPtr, outputBufferSize);
 
-    var decoder = new TextDecoder("utf8");
+    var decoder = new TextDecoder('utf8');
     var dec = decoder.decode(outputBufferPtr);
-    console.log("len:", dec.length)
-    dec.replace(/\0/g, '')
-    dec.replace(" ","");
-    console.log("test:", dec.length)
-    function removeNullBytes(str){
-      return str.split("").filter(char => char.codePointAt(0)).join("")
+    console.log('len:', dec.length);
+    dec.replace(/\0/g, '');
+    dec.replace(' ', '');
+    console.log('test:', dec.length);
+    function removeNullBytes(str) {
+      return str
+        .split('')
+        .filter((char) => char.codePointAt(0))
+        .join('');
     }
     let parsedDec = JSON.stringify(removeNullBytes(dec));
-    console.log("parsed:", parsedDec )
+    console.log('parsed:', parsedDec);
     let isObject = JSON.parse(parsedDec);
-    console.log("is object?", isObject)
+    console.log('is object?', isObject);
     return JSON.parse(isObject);
   }
 
-  return { error:true }
+  return { error: true };
 };
-
 
 const confirmUserOnSwitch = async (originalImages, simd, config, cb) => {
   privid_wasm_result = cb;
@@ -939,13 +966,13 @@ const confirmUserOnSwitch = async (originalImages, simd, config, cb) => {
       configInputSize,
       imageInputPtr /* input images */,
       // numImages /* number of input images */,
-     // originalImages[0].data.length /* size of one image */,
+      // originalImages[0].data.length /* size of one image */,
       originalImages[0].width /* width of one image */,
       originalImages[0].height /* height of one image */,
       bestImageFirstPtr /* operation result output buffer */,
       bestImageLenPtr /* operation result buffer length */,
       null,
-      0
+      0,
     );
   } catch (e) {
     console.error('---------__E__-------', e);

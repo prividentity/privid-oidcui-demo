@@ -32,6 +32,7 @@ const Login = (props: Props) => {
           productGroupId: 'test101',
           actionFlow: 'login',
           prompt: 'login',
+          redirectUrl: process.env.REACT_APP_REDICRECT_URL || ""
       };
       //@ts-ignore
       login(extraParams);
@@ -42,6 +43,7 @@ const Login = (props: Props) => {
           productGroupId: 'test101',
           actionFlow: 'register',
           prompt: 'login',
+          redirectUrl: process.env.REACT_APP_REDICRECT_URL || ""
       };
         //@ts-ignore
       login(extraParams);

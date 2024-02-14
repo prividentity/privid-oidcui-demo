@@ -4,6 +4,7 @@ export enum ActionFlowEnum {
   Login = "login",
   Register = "register",
   Age = "age",
+  ForgetMe = "forget_me",
 }
 
 export const OidcContext = createContext({

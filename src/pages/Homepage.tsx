@@ -44,7 +44,7 @@ const Homepage = () => {
 
       if (tokenDetails.actionFlow === ActionFlowEnum.Register) {
         navigate("/user-consent");
-      } else if (tokenDetails.actionFlow === ActionFlowEnum.Login) {
+      } else if (tokenDetails.actionFlow === ActionFlowEnum.Login || tokenDetails.actionFlow === ActionFlowEnum.ForgetMe) {
         navigate("/face-login");
       } else {
         setDisplayHomepage(true);

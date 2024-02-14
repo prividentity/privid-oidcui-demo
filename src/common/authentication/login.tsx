@@ -28,26 +28,38 @@ const Login = (props: Props) => {
   const [uuid, setUuid] = useState(null);
 
   const handleLogin = () => {
-      const extraParams = {
-          productGroupId: 'test101',
-          actionFlow: 'login',
-          prompt: 'login',
-          redirectUrl: process.env.REACT_APP_REDICRECT_URL || ""
-      };
-      //@ts-ignore
-      login(extraParams);
+    const extraParams = {
+      productGroupId: "test101",
+      actionFlow: "login",
+      prompt: "login",
+      redirectUrl: process.env.REACT_APP_REDICRECT_URL || "",
+    };
+    //@ts-ignore
+    login(extraParams);
   };
 
   const handleRegister = () => {
-      const extraParams = {
-          productGroupId: 'test101',
-          actionFlow: 'register',
-          prompt: 'login',
-          redirectUrl: process.env.REACT_APP_REDICRECT_URL || ""
-      };
-        //@ts-ignore
-      login(extraParams);
+    const extraParams = {
+      productGroupId: "test101",
+      actionFlow: "register",
+      prompt: "login",
+      redirectUrl: process.env.REACT_APP_REDICRECT_URL || "",
+    };
+    //@ts-ignore
+    login(extraParams);
   };
+
+  const handleForgetMe = () => {
+    const extraParams = {
+      productGroupId: "test101",
+      actionFlow: "forget_me",
+      prompt: "login",
+      redirectUrl: process.env.REACT_APP_REDICRECT_URL || "",
+    };
+    //@ts-ignore
+    login(extraParams);
+  };
+
   const onRegister = async () => {
     setLoader(true);
     const payload: any = {
@@ -100,8 +112,8 @@ const Login = (props: Props) => {
           onClick={() => {
             if (props.isLogin) {
               // navigateWithQueryParams("/login-options");
-             //  pkcContext.login();
-             handleLogin();
+              //  pkcContext.login();
+              handleLogin();
             } else {
               // onRegister();
               // pkcContext.login();
@@ -121,20 +133,20 @@ const Login = (props: Props) => {
         </Label>
 
         {/* {props.isLogin ? ( */}
-          <Label
-            className="mt-[16px] text-[16px] font-[Google Sans] text-[#5283EC] hover:underline font-[500] ms-2 cursor-pointer"
-            onClick={() => {
-              if (props.isLogin) {
-                navigateWithQueryParams("/");
-              } else {
-                navigateWithQueryParams("/login", {action:"login"});
+        <Label
+          className="mt-[16px] text-[16px] font-[Google Sans] text-[#5283EC] hover:underline font-[500] ms-2 cursor-pointer"
+          onClick={() => {
+            if (props.isLogin) {
+              navigateWithQueryParams("/");
+            } else {
+              navigateWithQueryParams("/login", { action: "login" });
 
-                // window.location.href = "/login?action=login" ;
-              }
-            }}
-          >
-            {props.isLogin ? "Register" : "Log in"}
-          </Label>
+              // window.location.href = "/login?action=login" ;
+            }
+          }}
+        >
+          {props.isLogin ? "Register" : "Log in"}
+        </Label>
         {/* // ) : (
         //   <a href="/login?action=login">
         //     <Label className="mt-[16px] text-[16px] font-[Google Sans] text-[#5283EC] hover:underline font-[500] ms-2 cursor-pointer">
@@ -142,6 +154,17 @@ const Login = (props: Props) => {
         //     </Label>
         //   </a>
         // )} */}
+      </div>
+
+      <div className="mt-5 flex justify-center">
+        <Label
+          className="mt-[16px] text-[16px] font-[Google Sans] text-[#5283EC] hover:underline font-[500] ms-2 cursor-pointer"
+          onClick={() => {
+           handleForgetMe()
+          }}
+        >
+          Forget Me
+        </Label>
       </div>
       <div className="flex justify-center mt-10">
         <ul className="flex justify-between w-[50%] max-md:w-[80%]">

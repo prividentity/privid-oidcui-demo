@@ -1,9 +1,9 @@
 import { UserManager, WebStorageStateStore } from 'oidc-client';
 
 const config = {
-  authority: "https://oidc.privateid.com/.well-known/openid-configuration", // Replace with your OIDC Authority
-  client_id: "A1sq0HVPNLhgpTCwRl_ut", // Replace with your client ID
-  client_secret: "UZLsKPqctA2NSmvklVkPfcT24wEt1MAzj6rcLuBirFfwbZFeD5OzVZlovjQ_4gLCXvtVqocpOVCiJYzmd4klfQ",
+  authority: "https://oidc.devel.privateid.com/.well-known/openid-configuration", // Replace with your OIDC Authority
+  client_id: process.env.REACT_APP_CLIENT_ID || "", // Replace with your client ID
+  client_secret: process.env.REACT_APP_CLIENT_SECRET || "",
   redirect_uri:  "https://oidc-ui.devel.privateid.com/callback", // Handle the callback after login
   response_type: "code",
   scope: "openid privateid", // or other scopes

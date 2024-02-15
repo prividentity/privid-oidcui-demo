@@ -29,7 +29,7 @@ const Login = (props: Props) => {
 
   const handleLogin = () => {
     const extraParams = {
-      productGroupId: "test101",
+      productGroupId: process.env.REACT_APP_PRODUCT_GROUP_ID || "",
       actionFlow: "login",
       prompt: "login",
       redirectUrl: process.env.REACT_APP_REDICRECT_URL || "",
@@ -40,7 +40,7 @@ const Login = (props: Props) => {
 
   const handleRegister = () => {
     const extraParams = {
-      productGroupId: "test101",
+      productGroupId: process.env.REACT_APP_PRODUCT_GROUP_ID || "",
       actionFlow: "register",
       prompt: "login",
       redirectUrl: process.env.REACT_APP_REDICRECT_URL || "",
@@ -51,7 +51,7 @@ const Login = (props: Props) => {
 
   const handleForgetMe = () => {
     const extraParams = {
-      productGroupId: "test101",
+      productGroupId: process.env.REACT_APP_PRODUCT_GROUP_ID || "",
       actionFlow: "forget_me",
       prompt: "login",
       redirectUrl: process.env.REACT_APP_REDICRECT_URL || "",

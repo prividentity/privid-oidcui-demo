@@ -65,14 +65,12 @@ function Address(Props: Props) {
 
     const encryptedAddressPayload = await pkiEncryptData({
       manual: {
-        address: {
           addressLine1: addressData?.addressLine1,
           addressLine2: addressData?.addressLine2,
           city: addressData?.city,
           state,
           zipCode: addressData?.zipCode,
           country: "USA",
-        },
       },
     });
     const addressResult = await updateUserDetails({

@@ -16,7 +16,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       SKIP_PREFLIGHT_CHECK: true
-      REACT_APP_API_URL: https://api.orchestration.devel.privateid.com/
+      REACT_APP_API_URL: https://api.orchestration.devel.privateid.com/oidc
       REACT_APP_CLIENT_ID: qLgLQvu-_lNwGFLqTe1g6
       REACT_APP_CLIENT_SECRET: 2If6Z8YGABYn7BRObpnWXWdSjbO2ufePtznXMfYm0t2sZ6sRnPO9PtJ6FBZtB8FYaRKfT3rRdQOzamdtFFYlwg
       REACT_APP_PRODUCT_GROUP_ID: test102

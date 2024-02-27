@@ -10,7 +10,7 @@ import { ECHO, TELE } from "constant";
 import config from "config";
 import Layout from "common/layout";
 import { OidcContext } from "context/oidcContext";
-import { getTransactionResult, verifyUserOidc } from "@privateid/ping-oidc-web-sdk-alpha";
+import { getTokenDetails, getTransactionResult, verifyUserOidc } from "@privateid/ping-oidc-web-sdk-alpha";
 
 type Props = {};
 let loaded = false;
@@ -58,7 +58,7 @@ const Waiting = (props: Props) => {
     console.log("OIDC context", oidcContext);
     console.log("URL", baseurl);
 
-    const verifyResult = verifyUserOidc({
+    const verifyResult = await verifyUserOidc({
       token: oidcContext.transactionToken,
       baseUrl: baseurl,
     })
@@ -66,6 +66,12 @@ const Waiting = (props: Props) => {
     console.log("verify result", verifyResult)
 
 
+    const tokenDetailsResult =await getTokenDetails({
+      token: oidcContext.transactionToken,
+      baseUrl: baseurl,
+    });
+
+    console.log("session status after verify", tokenDetailsResult);
 
     // const result = await getTransactionResult({
     //   token: oidcContext.transactionToken,

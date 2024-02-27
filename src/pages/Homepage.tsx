@@ -34,12 +34,10 @@ const Homepage = () => {
         baseUrl: process.env.REACT_APP_API_URL || "",
         token: TransactionToken,
       });
-      console.log("token details: ", tokenDetails);
+      console.log("token details: ", tokenDetails); 
 
       oidcContext.setTransactionToken(TransactionToken);
-      oidcContext.setInteractionUid(tokenDetails.interactionUid);
-      oidcContext.setOrganizationId(tokenDetails.organization);
-      oidcContext.setProductGroupId(tokenDetails.productGroupId);
+      oidcContext.setInteractionUid(TransactionToken);
       oidcContext.setActionFlow(tokenDetails.actionFlow);
 
       if (tokenDetails.actionFlow === ActionFlowEnum.Register) {

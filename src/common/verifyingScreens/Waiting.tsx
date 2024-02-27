@@ -73,15 +73,15 @@ const Waiting = (props: Props) => {
 
     console.log("session status after verify", tokenDetailsResult);
 
-    // const result = await getTransactionResult({
-    //   token: oidcContext.transactionToken,
-    //   baseUrl: baseurl,
-    // });
-    // console.log("Test:", result);
+    const result = await getTransactionResult({
+      token: oidcContext.transactionToken,
+      baseUrl: baseurl,
+    });
+    console.log("Test:", result);
 
-    // if (result.url) {
-    //   window.location.href = result.url;
-    // }
+    if (result.url) {
+      window.location.href = result.url;
+    }
   };
 
   useEffect(() => {

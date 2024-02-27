@@ -10,7 +10,7 @@ import { ECHO, TELE } from "constant";
 import config from "config";
 import Layout from "common/layout";
 import { OidcContext } from "context/oidcContext";
-import { getTransactionResult } from "@privateid/ping-oidc-web-sdk-alpha";
+import { getTransactionResult, verifyUserOidc } from "@privateid/ping-oidc-web-sdk-alpha";
 
 type Props = {};
 let loaded = false;
@@ -57,15 +57,25 @@ const Waiting = (props: Props) => {
       "https://api.orchestration.private.id/oidc";
     console.log("OIDC context", oidcContext);
     console.log("URL", baseurl);
-    const result = await getTransactionResult({
+
+    const verifyResult = verifyUserOidc({
       token: oidcContext.transactionToken,
       baseUrl: baseurl,
-    });
-    console.log("Test:", result);
+    })
 
-    if (result.url) {
-      window.location.href = result.url;
-    }
+    console.log("verify result", verifyResult)
+
+
+
+    // const result = await getTransactionResult({
+    //   token: oidcContext.transactionToken,
+    //   baseUrl: baseurl,
+    // });
+    // console.log("Test:", result);
+
+    // if (result.url) {
+    //   window.location.href = result.url;
+    // }
   };
 
   useEffect(() => {

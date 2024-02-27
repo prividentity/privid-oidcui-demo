@@ -19,10 +19,10 @@ jobs:
       REACT_APP_API_URL: https://api.orchestration.devel.privateid.com/oidc
       REACT_APP_CLIENT_ID: qLgLQvu-_lNwGFLqTe1g6
       REACT_APP_CLIENT_SECRET: 2If6Z8YGABYn7BRObpnWXWdSjbO2ufePtznXMfYm0t2sZ6sRnPO9PtJ6FBZtB8FYaRKfT3rRdQOzamdtFFYlwg
-      REACT_APP_PRODUCT_GROUP_ID: test102
+      REACT_APP_PRODUCT_GROUP_ID: test101
       REACT_APP_OIDC_AUTH_URL: https://oidc.privateid.com/auth
       REACT_APP_OIDC_TOKEN_URL: https://oidc.privateid.com/token
-      REACT_APP_REDIRECT_URL: https://oidc-ui.devel.privateid.com/callback
+      REACT_APP_REDIRECT_URL: https://oidc-ui.devel.privateid.com
       CI: false
 
     steps:

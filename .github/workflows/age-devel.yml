@@ -22,7 +22,7 @@ jobs:
       REACT_APP_PRODUCT_GROUP_ID: test102
       REACT_APP_OIDC_AUTH_URL: https://oidc.privateid.com/auth
       REACT_APP_OIDC_TOKEN_URL: https://oidc.privateid.com/token
-      REACT_APP_REDIRECT_URL: https://oidc-ui.devel.privateid.com/callback
+      REACT_APP_REDIRECT_URL: https://oidc-ui.devel.privateid.com
       CI: false
 
     steps:

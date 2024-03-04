@@ -81,9 +81,13 @@ const MobileSwitchGetStatus = (props: Props) => {
       if (tokenDetails.actionFlow === ActionFlowEnum.Register) {
         console.log("Navigate here!!!");
         if (tokenDetails.completedRequirements.includes("enroll")) {
-          navigateWithQueryParams("/confirm");
+          setTimeout(()=>{
+            navigateWithQueryParams("/confirm");
+          },2000)
         } else {
-          navigateWithQueryParams("/face-scan-intro");
+          setTimeout(()=>{
+            navigateWithQueryParams("/face-scan-intro");
+          },2000)
         }
       } else if (
         tokenDetails.actionFlow === ActionFlowEnum.Login ||

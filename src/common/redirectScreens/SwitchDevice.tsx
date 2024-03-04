@@ -48,6 +48,13 @@ function SwitchDevice(props: Props) {
   const [searchParams] = useSearchParams();
   const oidcContext = useContext(OidcContext);
 
+
+  // const getStatusAndDoNext = async() => {
+  //   const tokenRes = await getTokenDetails({
+  //     baseUrl: process.env.REACT_APP
+  //   })
+  // }
+
   useEffect(() => {
     let interval: any;
     if (timer > 0) {
@@ -100,18 +107,17 @@ function SwitchDevice(props: Props) {
   const baseurl =
     process.env.REACT_APP_API_URL ||
     "https://api.orchestration.private.id/oidc";
-  useInterval(() => {
+  useInterval(async () => {
     getTokenDetails({
       baseUrl: baseurl,
       token: oidcContext.transactionToken,
     }).then(async (res: any) => {
+      console.log("TOKEN DETAILS:", res);
       // navigateWithQueryParams('/redirected-mobile')
-      if (["SUCCESS", "FAILURE"].includes(res.status)) {
+      if (["success", "failure"].includes(res.status)) {
         setRefreshInterval(null);
-        if (res.status === "SUCCESS") {
-          const payload = {
-            id: res.user,
-          };
+        if (res.status === "success") {
+          navigateWithQueryParams("/waiting");
           // successSessionRedirect(, false, false);
           // setStep(STEPS.PASSKEY);
         } else {

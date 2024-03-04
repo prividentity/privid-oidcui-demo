@@ -13,7 +13,6 @@ const config = {
 
 class AuthService {
   userManager = new UserManager(config);
-
   login = (extraParams: any) => {
     return this.userManager.signinRedirect({
         extraQueryParams: extraParams

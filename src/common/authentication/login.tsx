@@ -29,7 +29,7 @@ const Login = (props: Props) => {
 
   const handleLogin = () => {
     const extraParams = {
-      productGroupId: process.env.REACT_APP_PRODUCT_GROUP_ID || "",
+      productGroupId: process.env.REACT_APP_AUTH_PRODUCT_GROUP_ID || "",
       actionFlow: "login",
       prompt: "login",
       redirectUrl: process.env.REACT_APP_REDIRECT_URL || "",

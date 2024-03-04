@@ -10,7 +10,11 @@ import { ECHO, TELE } from "constant";
 import config from "config";
 import Layout from "common/layout";
 import { OidcContext } from "context/oidcContext";
-import { getTokenDetails, getTransactionResult, verifyUserOidc } from "@privateid/ping-oidc-web-sdk-alpha";
+import {
+  getTokenDetails,
+  getTransactionResult,
+  verifyUserOidc,
+} from "@privateid/ping-oidc-web-sdk-alpha";
 
 type Props = {};
 let loaded = false;
@@ -19,6 +23,7 @@ const Waiting = (props: Props) => {
   const oidcContext = useContext(OidcContext);
   const [percentage, setPercentage] = useState(0);
   const { navigateWithQueryParams } = useNavigateWithQueryParams();
+  const [displayGoBack, setDisplayGoBack] = useState(false);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const onVerify = async () => {
     loaded = true;
@@ -61,12 +66,11 @@ const Waiting = (props: Props) => {
     const verifyResult = await verifyUserOidc({
       token: oidcContext.transactionToken,
       baseUrl: baseurl,
-    })
+    });
 
-    console.log("verify result", verifyResult)
+    console.log("verify result", verifyResult);
 
-
-    const tokenDetailsResult =await getTokenDetails({
+    const tokenDetailsResult = await getTokenDetails({
       token: oidcContext.transactionToken,
       baseUrl: baseurl,
     });
@@ -78,9 +82,12 @@ const Waiting = (props: Props) => {
       baseUrl: baseurl,
     });
     console.log("Test:", result);
-
-    if (result.url) {
-      window.location.href = result.url;
+    if (!oidcContext.isSwitched) {
+      if (result.url) {
+        window.location.href = result.url;
+      }
+    } else {
+      setDisplayGoBack(true);
     }
   };
 
@@ -98,16 +105,16 @@ const Waiting = (props: Props) => {
     return () => clearInterval(intervalId);
   }, [percentage]);
 
-  useEffect(() => {
-    console.log(66, { loaded });
-    setTimeout(() => {
-      if ([ECHO, TELE]?.includes(config.clientConfig.productGroupId)) {
-        navigateWithQueryParams("/address");
-      } else if (!loaded) {
-        onVerify();
-      }
-    }, 2000);
-  }, []);
+  // useEffect(() => {
+  //   console.log(66, { loaded });
+  //   setTimeout(() => {
+  //     if ([ECHO, TELE]?.includes(config.clientConfig.productGroupId)) {
+  //       navigateWithQueryParams("/address");
+  //     } else if (!loaded) {
+  //       onVerify();
+  //     }
+  //   }, 2000);
+  // }, []);
 
   const getRequirements = async (requirement: any) => {
     const requirementStep = await getFirstRequirement(requirement, context);
@@ -155,7 +162,9 @@ const Waiting = (props: Props) => {
             {percentage}%
           </Label>
           <Label className="text-[28px] font-[500] text-primaryText w-[90%] mt-3">
-            Please wait a sec, we’re verifying your identity..
+            {displayGoBack
+              ? "Please Go Back To Desktop"
+              : "Please wait a sec, we’re verifying your identity.."}
           </Label>
         </div>
       </div>

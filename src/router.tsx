@@ -34,6 +34,7 @@ import Homepage from "pages/Homepage";
 import ConfirmUser from "common/loginScreens/confirmUser";
 import { AuthProvider, TAuthConfig } from "react-oauth2-code-pkce";
 import LoginCallback from "pages/Callback";
+import MobileSwitchGetStatus from "common/verifyingScreens/MobileSwitch";
 
 let authConfigRegister: TAuthConfig = {
   clientId: process.env.REACT_APP_CLIENT_ID || "",
@@ -209,5 +210,9 @@ export const router = createBrowserRouter([
   {
     path:"/callback",
     element: <LoginCallback />
+  },
+  {
+    path:"/mobile-switch",
+    element: <MobileSwitchGetStatus />
   }
 ]);

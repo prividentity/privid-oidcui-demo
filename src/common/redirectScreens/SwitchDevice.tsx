@@ -155,7 +155,7 @@ function SwitchDevice(props: Props) {
   const from = searchParams.get("from");
   const urlForRedirect =
     window.location.origin +
-    "/confirm-user" +
+    "/mobile-switch" +
     +"?transactionToken=" +
     oidcContext.transactionToken;
   //  window.location.origin + from + "?transactionToken=" + oidcContext.transactionToken;

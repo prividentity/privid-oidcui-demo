@@ -32,18 +32,18 @@ const Login = (props: Props) => {
       productGroupId: process.env.REACT_APP_PRODUCT_GROUP_ID || "",
       actionFlow: "login",
       prompt: "login",
-      redirectUrl: process.env.REACT_APP_REDICRECT_URL || "",
+      redirectUrl: process.env.REACT_APP_REDIRECT_URL || "",
     };
     //@ts-ignore
     login(extraParams);
   };
-
+  
   const handleRegister = () => {
     const extraParams = {
       productGroupId: process.env.REACT_APP_PRODUCT_GROUP_ID || "",
       actionFlow: "register",
       prompt: "login",
-      redirectUrl: process.env.REACT_APP_REDICRECT_URL || "",
+      redirectUrl: process.env.REACT_APP_REDIRECT_URL || "",
     };
     //@ts-ignore
     login(extraParams);

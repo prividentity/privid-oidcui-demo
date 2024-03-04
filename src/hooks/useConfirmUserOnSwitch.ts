@@ -5,7 +5,7 @@ import { useSearchParams } from "react-router-dom";
 
 let showError = false;
 const useConfirmUserOnSwitch = (
-  setCompleted: (isComplete: boolean) =>void,
+  setCompleted: (isComplete: any) =>void,
   onSetStatus?: (e: number) => void,
   retryTimes = 3,
   isInitialPredict = true
@@ -66,7 +66,7 @@ const useConfirmUserOnSwitch = (
       ...returnValue,
       retryComplete: !isInitialPredict && tries === retryTimes,
     });
-    setCompleted(true);
+   // setCompleted(faceLoginInputImageData);
   };
 
   const handleInvalidImage = (returnValue: any) => {
@@ -85,7 +85,7 @@ const useConfirmUserOnSwitch = (
       }
       faceLoginWithLiveness();
     } else {
-      setCompleted(true);
+     // setCompleted(faceLoginInputImageData);
       setPredictData({
         ...returnValue,
         retryComplete: !isInitialPredict && tries === retryTimes,
@@ -114,6 +114,7 @@ const useConfirmUserOnSwitch = (
     if(faceLoginInputImageData){
       console.log("function pass:", faceLoginInputImageData)
       convertImageToBase64(faceLoginInputImageData?.imageData, faceLoginInputImageData?.width, faceLoginInputImageData?.height);
+      setCompleted(faceLoginInputImageData);
     }
   },[faceLoginInputImageData])
 

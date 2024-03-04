@@ -35,14 +35,26 @@ function ConfirmUser(Props: Props) {
   const { isCameraGranted } = useCameraPermissions(() => {});
   const [completed, setCompleted] = useState(false);
   const onStatus = (e: number) => {};
+
+ 
+  const completeConfirmUser = (image:any)=> {
+    context.setUser({
+      ...context.user,
+      enrollImageData: image
+    })
+    setCompleted(true);
+  }
   const {
     faceLoginWithLiveness,
     faceLoginWithLivenessMessage,
     faceLoginData,
     faceLoginResponseStatus,
-  } = useConfirmUserOnSwitch(setCompleted, onStatus, 50, false);
+  } = useConfirmUserOnSwitch(completeConfirmUser, onStatus, 50, false);
+
+  
 
   const [displayPage, setDisplayPage] = useState(false);
+
 
   const onSuccess = async () => {
     // context.setUser({

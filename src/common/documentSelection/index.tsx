@@ -52,7 +52,7 @@ function DocumentSelection(Props: Props) {
       .get(IPAPI_API)
       .then((response) => {
         let data = response.data;
-        setCountry(data?.country_name?.toLocaleLowerCase());
+        setCountry(data?.country_name?.toLocaleLowerCase() || "US");
       })
       .catch((error) => {
         console.log(error);

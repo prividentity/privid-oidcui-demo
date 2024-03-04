@@ -15,7 +15,7 @@ import {
   getTokenDetails,
   getTransactionResult,
   verifyUserOidc,
-  getUrlParameter
+  getUrlParameter,
 } from "@privateid/ping-oidc-web-sdk-alpha";
 import { UrlJSON } from "constant/url";
 
@@ -27,36 +27,36 @@ const MobileSwitchGetStatus = (props: Props) => {
   const [percentage, setPercentage] = useState(0);
   const { navigateWithQueryParams } = useNavigateWithQueryParams();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-//   const onVerify = async () => {
-//     loaded = true;
-//     console.log(26, { loaded });
-//     // await verifyIdWithSession({
-//     //   sessionToken: context?.tokenParams,
-//     // });
-//     // const verifyTokenRes = await verifySessionTokenV2({
-//     //   sessionToken: context?.tokenParams,
-//     // });
-//     // enum tokenStatus {
-//     //   PENDING = "PENDING",
-//     //   SUCCESS = "SUCCESS",
-//     //   FAILURE = "FAILURE",
-//     //   REQUIRES_INPUT = "REQUIRES_INPUT",
-//     // }
-//     // if (verifyTokenRes.status === tokenStatus.SUCCESS) {
-//     //   // Success
-//     //   loaded = false;
-//     //   navigateWithQueryParams("/generate-passkey");
-//     //   await issueVC(verifyTokenRes.user, true);
-//     // } else if (verifyTokenRes.status === tokenStatus.FAILURE) {
-//     //   loaded = false;
-//     //   navigateWithQueryParams("/failed");
-//     // } else if (verifyTokenRes.status === tokenStatus.REQUIRES_INPUT) {
-//     //   getRequirements(verifyTokenRes?.dueRequirements);
-//     // } else if (verifyTokenRes.status === tokenStatus.PENDING) {
-//     //   loaded = false;
-//     //   navigateWithQueryParams("/failed");
-//     // }
-//   };
+  //   const onVerify = async () => {
+  //     loaded = true;
+  //     console.log(26, { loaded });
+  //     // await verifyIdWithSession({
+  //     //   sessionToken: context?.tokenParams,
+  //     // });
+  //     // const verifyTokenRes = await verifySessionTokenV2({
+  //     //   sessionToken: context?.tokenParams,
+  //     // });
+  //     // enum tokenStatus {
+  //     //   PENDING = "PENDING",
+  //     //   SUCCESS = "SUCCESS",
+  //     //   FAILURE = "FAILURE",
+  //     //   REQUIRES_INPUT = "REQUIRES_INPUT",
+  //     // }
+  //     // if (verifyTokenRes.status === tokenStatus.SUCCESS) {
+  //     //   // Success
+  //     //   loaded = false;
+  //     //   navigateWithQueryParams("/generate-passkey");
+  //     //   await issueVC(verifyTokenRes.user, true);
+  //     // } else if (verifyTokenRes.status === tokenStatus.FAILURE) {
+  //     //   loaded = false;
+  //     //   navigateWithQueryParams("/failed");
+  //     // } else if (verifyTokenRes.status === tokenStatus.REQUIRES_INPUT) {
+  //     //   getRequirements(verifyTokenRes?.dueRequirements);
+  //     // } else if (verifyTokenRes.status === tokenStatus.PENDING) {
+  //     //   loaded = false;
+  //     //   navigateWithQueryParams("/failed");
+  //     // }
+  //   };
 
   const getTransactionDetails = async () => {
     const TransactionToken = getUrlParameter("transactionToken", "");
@@ -80,14 +80,15 @@ const MobileSwitchGetStatus = (props: Props) => {
 
       if (tokenDetails.actionFlow === ActionFlowEnum.Register) {
         console.log("Navigate here!!!");
+
         if (tokenDetails.completedRequirements.includes("enroll")) {
-          setTimeout(()=>{
-            navigateWithQueryParams("/confirm");
-          },2000)
+          setTimeout(() => {
+            navigateWithQueryParams("/confirm-user");
+          }, 2000);
         } else {
-          setTimeout(()=>{
+          setTimeout(() => {
             navigateWithQueryParams("/face-scan-intro");
-          },2000)
+          }, 2000);
         }
       } else if (
         tokenDetails.actionFlow === ActionFlowEnum.Login ||

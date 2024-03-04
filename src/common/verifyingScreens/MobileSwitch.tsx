@@ -83,7 +83,7 @@ const MobileSwitchGetStatus = (props: Props) => {
         if (tokenDetails.completedRequirements.includes("enroll")) {
           navigateWithQueryParams("/confirm");
         } else {
-          navigateWithQueryParams("/register");
+          navigateWithQueryParams("/face-scan-intro");
         }
       } else if (
         tokenDetails.actionFlow === ActionFlowEnum.Login ||

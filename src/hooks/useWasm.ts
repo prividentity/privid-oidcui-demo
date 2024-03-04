@@ -5,7 +5,7 @@ import { loadPrivIdModule as loadOidc } from "@privateid/ping-oidc-web-sdk-alpha
 
 let isLoading = false;
 const useWasm = (
-  sessionToken = "aadasdsadas",
+  sessionToken = "",
   apiUrl = "",
   publicKey = "",
   timeout = 0
@@ -44,6 +44,7 @@ const useWasm = (
       isLoading = true;
     }
     if (isWasmLoaded) {
+      console.log("====> WASM LOADED");
       setReady(true);
       setWasmStatus({ isChecking: false, support: true });
     }

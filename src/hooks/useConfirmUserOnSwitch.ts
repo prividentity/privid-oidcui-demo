@@ -114,7 +114,9 @@ const useConfirmUserOnSwitch = (
     if(faceLoginInputImageData){
       console.log("function pass:", faceLoginInputImageData)
       convertImageToBase64(faceLoginInputImageData?.imageData, faceLoginInputImageData?.width, faceLoginInputImageData?.height);
-      setCompleted(faceLoginInputImageData);
+      
+      const image =  new ImageData(faceLoginInputImageData.imageData, faceLoginInputImageData.width, faceLoginInputImageData.height);
+      setCompleted(image);
     }
   },[faceLoginInputImageData])
 

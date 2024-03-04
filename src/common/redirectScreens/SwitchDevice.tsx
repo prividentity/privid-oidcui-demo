@@ -155,9 +155,7 @@ function SwitchDevice(props: Props) {
   const from = searchParams.get("from");
   const urlForRedirect =
     window.location.origin +
-    "/mobile-switch" +
-    +"?transactionToken=" +
-    oidcContext.transactionToken;
+    "/mobile-switch?transactionToken=" + oidcContext.transactionToken;
   //  window.location.origin + from + "?transactionToken=" + oidcContext.transactionToken;
 
   return (
@@ -196,12 +194,12 @@ function SwitchDevice(props: Props) {
                 <TabsTrigger value="link" className="">
                   Link
                 </TabsTrigger>
-                <TabsTrigger value="sms" className="">
+                {/* <TabsTrigger value="sms" className="">
                   SMS
                 </TabsTrigger>
                 <TabsTrigger value="email" className="">
                   Email
-                </TabsTrigger>
+                </TabsTrigger> */}
               </TabsList>
               <TabsContent value="qr-code" className="mt-5">
                 <Card className="border-none bg-[#f8f8f8] rounded-[24px] p-6 max-md:p-[10px]">

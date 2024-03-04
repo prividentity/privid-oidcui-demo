@@ -5,7 +5,7 @@ import { Label } from "components/ui/label";
 import { useNavigateWithQueryParams } from "utils/navigateWithQueryParams";
 import { UserContext } from "context/userContext";
 import { issueCredentials } from "services/vc-dock";
-import { getFirstRequirement, getUrlParameter } from "utils";
+import { getFirstRequirement } from "utils";
 import { ECHO, TELE } from "constant";
 import config from "config";
 import Layout from "common/layout";
@@ -15,6 +15,7 @@ import {
   getTokenDetails,
   getTransactionResult,
   verifyUserOidc,
+  getUrlParameter
 } from "@privateid/ping-oidc-web-sdk-alpha";
 import { UrlJSON } from "constant/url";
 
@@ -62,6 +63,8 @@ const MobileSwitchGetStatus = (props: Props) => {
     const publicKey = await getPublicKey({
       baseUrl: process.env.REACT_APP_API_URL || "",
     });
+
+    console.log("Transaction Token?", TransactionToken);
     console.log("Public Key:", publicKey);
     oidcContext.setPublicKey(publicKey.publicKey);
     if (TransactionToken) {

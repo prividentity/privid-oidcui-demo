@@ -16,9 +16,6 @@ const Homepage = () => {
   console.log("auth Context: ",authContext);
   const [displayHomepage, setDisplayHomepage] = useState(false);
 
-
-  
-
   const navigate = useNavigate();
   const oidcContext = useContext(OidcContext);
 

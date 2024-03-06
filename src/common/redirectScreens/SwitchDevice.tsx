@@ -42,7 +42,7 @@ function SwitchDevice(props: Props) {
   const [email, setEmail] = useState("");
   const [lodaing, setLoading] = useState(false);
   const [refreshInterval, setRefreshInterval] = useState<null | number>(10000);
-  const [timer, setTimer] = useState(60);
+  const [timer, setTimer] = useState(60000);
   const [isResendDisabled, setIsResendDisabled] = useState(false);
   const [smsLimit, setSmsLimit] = useState(0);
   const [searchParams] = useSearchParams();
@@ -60,7 +60,7 @@ function SwitchDevice(props: Props) {
     if (timer > 0) {
       interval = setInterval(() => {
         setTimer((prevTimer) => prevTimer - 1);
-      }, 1000);
+      }, 500);
     } else {
       clearInterval(interval);
       if (smsLimit !== 4) {

@@ -1,12 +1,9 @@
 name: oidc-client devel privateid workflow
 
 on:
-  workflow_dispatch:
-    inputs:
-      commit_sha:
-        description: 'Commit SHA to deploy'
-        required: true
-        type: string
+  push:
+    branches:
+    - devel
   
 jobs:
   run:

@@ -51,7 +51,7 @@ const Login = (props: Props) => {
 
   const handleForgetMe = () => {
     const extraParams = {
-      productGroupId: process.env.REACT_APP_PRODUCT_GROUP_ID || "",
+      productGroupId: process.env.REACT_APP_AUTH_PRODUCT_GROUP_ID || "",
       actionFlow: "forget_me",
       prompt: "login",
       redirectUrl: process.env.REACT_APP_REDICRECT_URL || "",

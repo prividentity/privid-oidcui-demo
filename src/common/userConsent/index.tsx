@@ -85,14 +85,6 @@ const UserConsent = () => {
               </li>
               <li className="ps-2 mt-4 text-primary">
                 <Label className="text-[14px] font-[400] leading-0 text-secondaryText">
-                  Only encrypted data is sent to the Private Identity servers.
-                  Private Identity then confirms with third-party partners
-                  whether or not you have reached the identity assurance
-                  threshold required to create an account.
-                </Label>
-              </li>
-              <li className="ps-2 mt-4 text-primary">
-                <Label className="text-[14px] font-[400] leading-0 text-secondaryText">
                   This app is certified compliant with the IEEE 2410-2021
                   Standard for Biometric Privacy. No biometric template is
                   created, processed, stored, transmitted, or received.

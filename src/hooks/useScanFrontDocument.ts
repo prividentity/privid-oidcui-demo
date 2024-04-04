@@ -235,7 +235,6 @@ const useScanFrontDocument = (
       {
         input_image_format: "rgba",
       },
-      canvasObj
     );
     console.log("image result:", result);
     try {

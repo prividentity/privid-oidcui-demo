@@ -25,9 +25,11 @@ export const OidcContext = createContext({
   organizationId: "",
   setOrganizationId: (organizationId: string) => {},
   publicKey: "",
-  setPublicKey: (publicKey:string) => {},
-  isSwitched: false, 
+  setPublicKey: (publicKey: string) => {},
+  isSwitched: false,
   setIsSwitched: (isSwitched: boolean) => {},
+  clientId: "",
+  setClientId: (clientId: string) => {},
 });
 
 const OidcContextProvider = ({ children }: { children: React.ReactNode }) => {
@@ -41,6 +43,8 @@ const OidcContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [actionFlow, setActionFlow] = useState("");
   const [organizationId, setOrganizationId] = useState("");
   const [publicKey, setPublicKey] = useState("");
+
+  const [clientId, setClientId] = useState("");
 
   const [isSwitched, setIsSwitched] = useState(false);
 
@@ -61,10 +65,12 @@ const OidcContextProvider = ({ children }: { children: React.ReactNode }) => {
     setActionFlow,
     organizationId,
     setOrganizationId,
-    publicKey, 
+    publicKey,
     setPublicKey,
-    isSwitched, 
-    setIsSwitched
+    isSwitched,
+    setIsSwitched,
+    clientId, 
+    setClientId
   };
 
   const memoValues = useMemo(() => values, [values]);

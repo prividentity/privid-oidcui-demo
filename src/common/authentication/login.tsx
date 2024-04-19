@@ -10,6 +10,8 @@ import { useNavigateWithQueryParams } from "utils/navigateWithQueryParams";
 import { UserContext } from "context/userContext";
 import { AuthContext } from "react-oauth2-code-pkce";
 import { useAuth } from "context/authContext";
+import { createCibaSession } from "@privateid/ping-oidc-web-sdk-alpha";
+import { OidcContext } from "context/oidcContext";
 
 type Props = {
   isLogin?: boolean;
@@ -22,6 +24,7 @@ const Login = (props: Props) => {
   const navigate = useNavigate();
   const { navigateWithQueryParams } = useNavigateWithQueryParams();
   const [loader, setLoader] = useState(false);
+  const oidcContext = useContext(OidcContext);
 
   const { login } = useAuth();
   const [decodedIdToken, setDecodedIdToken] = useState(null);
@@ -37,16 +40,46 @@ const Login = (props: Props) => {
     //@ts-ignore
     login(extraParams);
   };
-  
-  const handleRegister = () => {
-    const extraParams = {
-      productGroupId: process.env.REACT_APP_PRODUCT_GROUP_ID || "",
-      actionFlow: "register",
-      prompt: "login",
-      redirectUrl: process.env.REACT_APP_REDIRECT_URL || "",
-    };
+
+  const handleRegister = async() => {
+    // const extraParams = {
+    //   productGroupId: process.env.REACT_APP_PRODUCT_GROUP_ID || "",
+    //   actionFlow: "register",
+    //   prompt: "login",
+    //   redirectUrl: process.env.REACT_APP_REDIRECT_URL || "",
+    // };
     //@ts-ignore
-    login(extraParams);
+    // login(extraParams);
+    const getRandomToken = () => {
+      function randomString(length:number, chars:string) {
+        var result = "";
+        for (var i = length; i > 0; --i)
+          result += chars[Math.floor(Math.random() * chars.length)];
+        return result;
+      }
+      var rString = randomString(
+        32,
+        "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      );
+      return rString;
+    };
+    const result = await createCibaSession({
+      baseUrl: "https://api.orchestration.devel.privateid.com/oidc",
+      productGroupId: "test101",
+      clientId: "CtzBXSfip7saYUGB28gps",
+      actionFlow: "register",
+      interactionUid: getRandomToken(),
+    });
+
+    console.log("login result", result);
+    console.log("length:", result.url.length);
+    console.log("index:", result.url.indexOf("="))
+    const token = result.url.slice(result.url.indexOf("=")+1);
+    oidcContext.setTransactionToken(token);
+    oidcContext.setActionFlow("register");
+    oidcContext.setProductGroupId("test101");
+    oidcContext.setClientId("CtzBXSfip7saYUGB28gps");
+    navigate(`/user-consent`);    
   };
 
   const handleForgetMe = () => {
@@ -160,7 +193,7 @@ const Login = (props: Props) => {
         <Label
           className="mt-[16px] text-[16px] font-[Google Sans] text-[#5283EC] hover:underline font-[500] ms-2 cursor-pointer"
           onClick={() => {
-           handleForgetMe()
+            handleForgetMe();
           }}
         >
           Forget Me

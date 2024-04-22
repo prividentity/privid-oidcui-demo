@@ -25,29 +25,7 @@ const ModuleName = 'face_mask';
 
 let useCdnLink = false;
 
-// const loadWasmModule = async (modulePath, moduleName, saveCache) => {
-//   const wasm = await fetchResource(
-//     `${cdnUrl}/wasm/face_mask/${modulePath}/${moduleName}.wasm`,
-//     `../wasm/face_mask/${modulePath}/${moduleName}.wasm`,
-//   );
-//   const script = await fetchResource(
-//     `${cdnUrl}/wasm/face_mask/${modulePath}/${moduleName}.js`,
-//     `../wasm/face_mask/${modulePath}/${moduleName}.js`,
-//   );
-//   // const wasm = await fetch(`../wasm/face_mask/${modulePath}/${moduleName}.wasm`);
-//   // const script = await fetch(`../wasm/face_mask/${modulePath}/${moduleName}.js`);
-//   const scriptBuffer = await script.text();
-//   const buffer = await wasm.arrayBuffer();
-//   eval(scriptBuffer);
-//   const module = await createTFLiteModule({ wasmBinary: buffer });
-//   if (saveCache) {
-//     const version = module.UTF8ToString(module._privid_get_version());
-//     await putKey('face_mask', buffer, scriptBuffer, version);
-//   }
-//   return module;
-// };
-
-const isLoad = (simd, session_token, public_key, url, timeout, debugLevel) =>
+const isLoad = (simd, session_token, public_key, url, timeout, debugLevel, originUrl) =>
   new Promise(async (resolve, reject) => {
     apiUrl = url;
     publicKey = public_key;
@@ -66,7 +44,7 @@ const isLoad = (simd, session_token, public_key, url, timeout, debugLevel) =>
     const moduleName = 'privid_fhe_oidc';
     const cachedModule = await readKey(ModuleName);
 
-    const fetchdVersion = await (await fetch(`../wasm/${ModuleName}/${modulePath}/version.json`)).json();
+    const fetchdVersion = await (await fetch(`${originUrl}/wasm/${ModuleName}/${modulePath}/version.json`)).json();
     console.log('fetch?', fetchdVersion);
     console.log(
       `check version ${`${cachedModule ? cachedModule?.version.toString() : 'no cached version'} - ${
@@ -78,6 +56,8 @@ const isLoad = (simd, session_token, public_key, url, timeout, debugLevel) =>
         const { cachedWasm, cachedScript } = cachedModule;
         eval(cachedScript);
         wasmPrivModule = await createTFLiteModule({ wasmBinary: cachedWasm });
+
+        // console.log('oidc module', wasmPrivModule);
         if (!checkWasmLoaded) {
           await initializeWasmSession(apiUrl, publicKey, sessionToken, timeoutSession, debugType);
           checkWasmLoaded = true;
@@ -86,12 +66,12 @@ const isLoad = (simd, session_token, public_key, url, timeout, debugLevel) =>
       resolve('Cache Loaded');
     } else {
       wasmPrivModule = await loadWasmModule(modulePath, moduleName);
-      console.log('Modules:', wasmPrivModule);
+      // console.log('oidc module:', wasmPrivModule);
       if (!checkWasmLoaded) {
         await initializeWasmSession(apiUrl, publicKey, sessionToken, debugType);
         checkWasmLoaded = true;
       }
-      console.log('WASM MODULES:', wasmPrivModule);
+      // console.log('WASM MODULES:', wasmPrivModule);
       resolve('Loaded');
     }
   });
@@ -207,7 +187,7 @@ const scanDocument = async (imageInput, simd, cb, doPredict, config, debug_type 
   const encoder = new TextEncoder();
   const config_bytes = encoder.encode(`${config}`);
 
-  const configInputSize = config.length;
+  const configInputSize = config.toString().length;
   const configInputPtr = wasmPrivModule._malloc(configInputSize);
   wasmPrivModule.HEAP8.set(config_bytes, configInputPtr / config_bytes.BYTES_PER_ELEMENT);
 
@@ -321,7 +301,7 @@ const FHE_enrollOnefa = async (imageData, simd, config, cb) => {
   const bestImageFirstPtr = wasmPrivModule._malloc(Int32Array.BYTES_PER_ELEMENT);
   const bestImageLenPtr = wasmPrivModule._malloc(Int32Array.BYTES_PER_ELEMENT);
   wasmPrivModule.HEAP8.set(config_bytes, configInputPtr / config_bytes.BYTES_PER_ELEMENT);
-  console.log('Config:', config);
+  // console.log('Config:', config);
   try {
     wasmPrivModule._privid_enroll_onefa(
       wasmSession /* session pointer */,
@@ -351,7 +331,11 @@ const FHE_enrollOnefa = async (imageData, simd, config, cb) => {
     const outputBufferPtr = new Uint8Array(wasmPrivModule.HEAPU8.buffer, outputBufferSecPtr, outputBufferSize);
     const outputBuffer = Uint8ClampedArray.from(outputBufferPtr);
     const outputBufferData = outputBufferSize > 0 ? outputBuffer : null;
-    bestImage = { imageData: outputBufferData, width: imageData.width, height: imageData.height };
+    bestImage = {
+      imageData: outputBufferData,
+      width: imageData.width,
+      height: imageData.height,
+    };
   }
 
   wasmPrivModule._free(imageInputPtr);
@@ -360,7 +344,7 @@ const FHE_enrollOnefa = async (imageData, simd, config, cb) => {
   wasmPrivModule._free(configInputPtr);
   wasmPrivModule._free(bestImageFirstPtr);
   wasmPrivModule._free(bestImageLenPtr);
-  console.log('Best Image?', bestImage);
+  // console.log('Best Image?', bestImage);
   return bestImage;
 };
 
@@ -392,9 +376,61 @@ const FHE_predictOnefa = async (originalImages, simd, config, cb) => {
   const resultFirstPtr = wasmPrivModule._malloc(Int32Array.BYTES_PER_ELEMENT);
   // create a pointer to interger to hold the length of the output buffer
   const resultLenPtr = wasmPrivModule._malloc(Int32Array.BYTES_PER_ELEMENT);
-  console.log('Config:', config);
+  // console.log('Config:', config);
   try {
     await wasmPrivModule._privid_face_predict_onefa(
+      wasmSession /* session pointer */,
+      configInputPtr,
+      configInputSize,
+      imageInputPtr /* input images */,
+      numImages /* number of input images */,
+      originalImages[0].data.length /* size of one image */,
+      originalImages[0].width /* width of one image */,
+      originalImages[0].height /* height of one image */,
+      resultFirstPtr /* operation result output buffer */,
+      resultLenPtr /* operation result buffer length */,
+    );
+  } catch (e) {
+    console.error('---------__E__-------', e);
+  }
+
+  wasmPrivModule._free(imageInputPtr);
+  wasmPrivModule._free(configInputPtr);
+  wasmPrivModule._free(resultFirstPtr);
+  wasmPrivModule._free(resultLenPtr);
+};
+
+const predictStatus = async (originalImages, simd, config, cb) => {
+  privid_wasm_result = cb;
+  if (!wasmPrivModule) {
+    await isLoad(simd, sessionToken, publicKey, apiUrl, timeout, debugType);
+  }
+
+  const numImages = originalImages.length;
+  const imageInput = flatten(
+    originalImages.map((x) => x.data),
+    Uint8Array,
+  );
+  // const version = wasmPrivModule._get_version();
+
+  const encoder = new TextEncoder();
+  const config_bytes = encoder.encode(`${config}`);
+
+  const configInputSize = config.length;
+  const configInputPtr = wasmPrivModule._malloc(configInputSize);
+  wasmPrivModule.HEAP8.set(config_bytes, configInputPtr / config_bytes.BYTES_PER_ELEMENT);
+
+  const imageInputSize = imageInput.length * imageInput.BYTES_PER_ELEMENT;
+  const imageInputPtr = wasmPrivModule._malloc(imageInputSize);
+
+  wasmPrivModule.HEAP8.set(imageInput, imageInputPtr / imageInput.BYTES_PER_ELEMENT);
+
+  const resultFirstPtr = wasmPrivModule._malloc(Int32Array.BYTES_PER_ELEMENT);
+  // create a pointer to interger to hold the length of the output buffer
+  const resultLenPtr = wasmPrivModule._malloc(Int32Array.BYTES_PER_ELEMENT);
+  // console.log('Config:', config);
+  try {
+    await wasmPrivModule._privid_face_predict_status(
       wasmSession /* session pointer */,
       configInputPtr,
       configInputSize,
@@ -570,15 +606,15 @@ function putKey(key, cachedWasm, cachedScript, version) {
  var key_args= buffer_args(key);
  var session_out_ptr = output_ptr();
  const s_result = wasmPrivModule._privid_initialize_session(
-      ...key_args.args(),
-      ...url_args.args(),
-      debug_type,
-      session_out_ptr.outer_ptr(),
-    );
-    url_args.free();
-    key_args.free();
-    //get
-    var session = session_out_ptr.inner_ptr();
+ ...key_args.args(),
+ ...url_args.args(),
+ debug_type,
+ session_out_ptr.outer_ptr(),
+ );
+ url_args.free();
+ key_args.free();
+ //get
+ var session = session_out_ptr.inner_ptr();
  *
  *  when .free() is called the closure can be reused to create a buffer for the same string with which, it was created with
  *  over and over again.
@@ -677,11 +713,11 @@ async function initializeWasmSession(apiUrl, publicKey, sessionToken, debugType)
       named_urls: [{ url_name: 'base_url', url: apiUrl }],
       public_key: publicKey,
       session_token: sessionToken,
-      debug_level: 'debug',
+      debug_level: 0,
     };
-    console.log('Args', initializationArgs);
+   //  console.log('Args', initializationArgs);
     const initializationArgsString = JSON.stringify(initializationArgs);
-    console.log('STRING ARGS:', initializationArgsString);
+    // console.log('STRING ARGS:', initializationArgsString);
     const initArgs = buffer_args(initializationArgsString);
 
     const session_out_ptr = output_ptr();
@@ -978,24 +1014,18 @@ const confirmUserOnSwitch = async (originalImages, simd, config, cb) => {
     console.error('---------__E__-------', e);
   }
 
-  let bestImage = null;
-
-  const [outputBufferSize] = new Uint32Array(wasmPrivModule.HEAPU8.buffer, bestImageLenPtr, 1);
-
-  if (outputBufferSize > 0) {
-    let outputBufferSecPtr = null;
-    [outputBufferSecPtr] = new Uint32Array(wasmPrivModule.HEAPU8.buffer, bestImageFirstPtr, 1);
-    const outputBufferPtr = new Uint8Array(wasmPrivModule.HEAPU8.buffer, outputBufferSecPtr, outputBufferSize);
-    const outputBuffer = Uint8ClampedArray.from(outputBufferPtr);
-    const outputBufferData = outputBufferSize > 0 ? outputBuffer : null;
-    bestImage = { imageData: outputBufferData, width: originalImages[0].width, height: originalImages[0].height };
-  }
+  const outputBufferData = getBufferFromPtrImage(bestImageFirstPtr, imageInputSize);
+  const bestImage = {
+    imageData: outputBufferData,
+    width: originalImages[0].width,
+    height: originalImages[0].height,
+  };
 
   wasmPrivModule._free(imageInputPtr);
   wasmPrivModule._free(configInputPtr);
   wasmPrivModule._free(bestImageFirstPtr);
   wasmPrivModule._free(bestImageLenPtr);
-  console.log('Best Image?', bestImage);
+  console.log('Best Image?', bestImage.imageData.length, bestImage.width * bestImage.height * 4);
   return bestImage;
 };
 
@@ -1010,4 +1040,5 @@ Comlink.expose({
   faceCompare,
   pkiEnrcrypt,
   confirmUserOnSwitch,
+  predictStatus,
 });

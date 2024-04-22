@@ -25,9 +25,17 @@ export const OidcContext = createContext({
   organizationId: "",
   setOrganizationId: (organizationId: string) => {},
   publicKey: "",
-  setPublicKey: (publicKey:string) => {},
-  isSwitched: false, 
+  setPublicKey: (publicKey: string) => {},
+  isSwitched: false,
   setIsSwitched: (isSwitched: boolean) => {},
+  clientId: "",
+  setClientId: (clientId: string) => {},
+  cibaAuthReqId: "",
+  setCibaAuthReqId: (cibaAuthReqId: string) => {},
+  cibaIdToken: "", 
+  setCibaIdToken: (cibaIdToken: string) => {},
+  cibaAccessToken: "",
+  setCibaAccessToken: (cibaAccessToken: string) => {},
 });
 
 const OidcContextProvider = ({ children }: { children: React.ReactNode }) => {
@@ -41,6 +49,12 @@ const OidcContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [actionFlow, setActionFlow] = useState("");
   const [organizationId, setOrganizationId] = useState("");
   const [publicKey, setPublicKey] = useState("");
+
+  const [clientId, setClientId] = useState("");
+  const [cibaAuthReqId, setCibaAuthReqId] = useState("");
+
+  const [cibaIdToken, setCibaIdToken] = useState("");
+  const [cibaAccessToken, setCibaAccessToken] = useState("");
 
   const [isSwitched, setIsSwitched] = useState(false);
 
@@ -61,10 +75,18 @@ const OidcContextProvider = ({ children }: { children: React.ReactNode }) => {
     setActionFlow,
     organizationId,
     setOrganizationId,
-    publicKey, 
+    publicKey,
     setPublicKey,
-    isSwitched, 
-    setIsSwitched
+    isSwitched,
+    setIsSwitched,
+    clientId,
+    setClientId,
+    cibaAuthReqId,
+    setCibaAuthReqId,
+    cibaIdToken, 
+    setCibaIdToken,
+    cibaAccessToken, 
+    setCibaAccessToken
   };
 
   const memoValues = useMemo(() => values, [values]);

@@ -7,6 +7,7 @@ import { Label } from "components/ui/label";
 import { Button } from "components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { isMobile } from "utils";
+import { OidcContext } from "context/oidcContext";
 
 type Props = {
   heading?: string;
@@ -15,6 +16,7 @@ type Props = {
 function Success(Props: Props) {
   const context = useContext(UserContext);
   const navigate = useNavigate();
+  const oidcContext = useContext(OidcContext);
   return (
     <Layout>
       <div className="h-full p-10 flex justify-between items-center flex-col max-md:p-[20px]">
@@ -24,7 +26,10 @@ function Success(Props: Props) {
               loop={false}
               autoplay={true}
               animationData={successJson}
-              style={{ height: isMobile ? 350 : 400, width: isMobile ? 380 : 400 }}
+              style={{
+                height: isMobile ? 350 : 400,
+                width: isMobile ? 380 : 400,
+              }}
             />
           </div>
           <Label className="text-[28px] font-[500] text-primaryText w-[90%] mt-[-4rem] max-md:mt-[-4rem]">
@@ -32,6 +37,18 @@ function Success(Props: Props) {
               Props.heading ||
               "Success! Your account is created"}
           </Label>
+          <div>
+            <Label className="text-[14px] font-[500] text-primaryText w-[90%] mt-[-4rem] max-md:mt-[-4rem]">
+              {`ID Token: ${oidcContext.cibaIdToken.slice(
+                oidcContext.cibaIdToken.length - 20
+              )}`}
+            </Label>
+          </div>
+          <div>
+            <Label className="text-[14px] font-[500] text-primaryText w-[90%] mt-[-4rem] max-md:mt-[-4rem]">
+              {`Access Token: ${oidcContext.cibaAccessToken}`}
+            </Label>
+          </div>
         </div>
         <div className="mt-[3rem] w-full">
           <Button

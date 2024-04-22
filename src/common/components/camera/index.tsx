@@ -75,6 +75,7 @@ function CameraComponent(props: Props) {
   const [documentCompletedScan, setDocumentCompletedScan] = useState(false);
   const enrollOneFaProgress: any = progress || 0;
   const { isCameraGranted, state }: any = useCameraPermissions(() => {});
+  const oidcContext = useContext(OidcContext);
   // console.log({documentCompletedScan, scanCompleted})
   useEffect(() => {
     if (message === REMOVE_GLASSES && (faceCamera || faceLoginCamera)) {
@@ -89,7 +90,7 @@ function CameraComponent(props: Props) {
     // }
   };
   const documentScan = frontDl || backDl || passportScan;
-  const oidcContext = useContext(OidcContext);
+
   const url = process.env.REACT_APP_API_URL || "";
   const { ready: wasmReady, wasmStatus } = useWasm(
     oidcContext.transactionToken || getUrlParameter("transactionToken", ""),

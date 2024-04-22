@@ -5,7 +5,7 @@ import { useNavigateWithQueryParams } from "utils/navigateWithQueryParams";
 import useEnrollOneFaWithLiveness from "hooks/useEnrollOneFaWithLiveness";
 import { UserContext } from "context/userContext";
 
-import { closeCamera } from "@privateid/ping-oidc-web-sdk-alpha";
+import { closeCamera, createCibaAuthRequest, getSessionDetails, getTokenDetails } from "@privateid/ping-oidc-web-sdk-alpha";
 import Layout from "common/layout";
 import BackButton from "common/components/backButton";
 import CameraComponent from "common/components/camera";
@@ -52,6 +52,8 @@ function FaceScan(Props: Props) {
 
   useEffect(() => {
     if (enrollPortrait && enrollData) {
+
+
       onFaceSuccess();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -63,6 +65,24 @@ function FaceScan(Props: Props) {
       ...context.user,
       enrollImageData: enrollPortrait,
     });
+
+    const enrollTokenDetails = await getSessionDetails({
+      baseUrl: process.env.REACT_APP_API_URL || "",
+      token: oidcContext.transactionToken,
+    });
+
+    console.log("after enroll", enrollTokenDetails)
+
+    const createCibaAuth = await createCibaAuthRequest({
+      oidcUrl: process.env.REACT_APP_OIDC_URL || "", //"https://oidc.devel.privateid.com",
+      login_hint: enrollTokenDetails.userPuid,
+      client_id: oidcContext.clientId,
+      actionFlow: "register",
+    });
+
+    console.log("CibaAuthRequest:", createCibaAuth);
+
+    oidcContext.setCibaAuthReqId(createCibaAuth.auth_req_id);
     setScanCompleted(true);
   };
 

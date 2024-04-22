@@ -10,6 +10,8 @@ import { useNavigateWithQueryParams } from "utils/navigateWithQueryParams";
 import { UserContext } from "context/userContext";
 import { AuthContext } from "react-oauth2-code-pkce";
 import { useAuth } from "context/authContext";
+import { createCibaSession } from "@privateid/ping-oidc-web-sdk-alpha";
+import { OidcContext } from "context/oidcContext";
 
 type Props = {
   isLogin?: boolean;
@@ -22,31 +24,83 @@ const Login = (props: Props) => {
   const navigate = useNavigate();
   const { navigateWithQueryParams } = useNavigateWithQueryParams();
   const [loader, setLoader] = useState(false);
+  const oidcContext = useContext(OidcContext);
 
   const { login } = useAuth();
   const [decodedIdToken, setDecodedIdToken] = useState(null);
   const [uuid, setUuid] = useState(null);
 
-  const handleLogin = () => {
-    const extraParams = {
-      productGroupId: process.env.REACT_APP_AUTH_PRODUCT_GROUP_ID || "",
-      actionFlow: "login",
-      prompt: "login",
-      redirectUrl: process.env.REACT_APP_REDIRECT_URL || "",
-    };
-    //@ts-ignore
-    login(extraParams);
+  const getRandomToken = () => {
+    function randomString(length:number, chars:string) {
+      var result = "";
+      for (var i = length; i > 0; --i)
+        result += chars[Math.floor(Math.random() * chars.length)];
+      return result;
+    }
+    var rString = randomString(
+      32,
+      "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    );
+    return rString;
   };
-  
-  const handleRegister = () => {
-    const extraParams = {
-      productGroupId: process.env.REACT_APP_PRODUCT_GROUP_ID || "",
-      actionFlow: "register",
-      prompt: "login",
-      redirectUrl: process.env.REACT_APP_REDIRECT_URL || "",
-    };
+
+  const handleLogin = async() => {
+    // const extraParams = {
+    //   productGroupId: process.env.REACT_APP_AUTH_PRODUCT_GROUP_ID || "",
+    //   actionFlow: "login",
+    //   prompt: "login",
+    //   redirectUrl: process.env.REACT_APP_REDIRECT_URL || "",
+    // };
+    // //@ts-ignore
+    // login(extraParams);
+
+    const result = await createCibaSession({
+      baseUrl: process.env.REACT_APP_API_URL || "", //"https://api.orchestration.devel.privateid.com/oidc",
+      productGroupId: process.env.REACT_APP_AUTH_PRODUCT_GROUP_ID || "", //"test102",
+      clientId: process.env.REACT_APP_CLIENT_ID || "", // "0nCeaqMLNuIhZ2nFV029i", //"CtzBXSfip7saYUGB28gps",
+      actionFlow: "login",
+      interactionUid: getRandomToken(),
+    });
+
+    console.log("login result", result);
+    console.log("length:", result.url.length);
+    console.log("index:", result.url.indexOf("="))
+    const token = result.url.slice(result.url.indexOf("=")+1);
+    oidcContext.setTransactionToken(token);
+    oidcContext.setActionFlow("login");
+    oidcContext.setProductGroupId(process.env.REACT_APP_AUTH_PRODUCT_GROUP_ID || "") ; //"test102");
+    oidcContext.setClientId(process.env.REACT_APP_CLIENT_ID || ""); //"CtzBXSfip7saYUGB28gps");
+    navigate(`/face-login`);   
+  };
+
+
+  const handleRegister = async() => {
+    // const extraParams = {
+    //   productGroupId: process.env.REACT_APP_PRODUCT_GROUP_ID || "",
+    //   actionFlow: "register",
+    //   prompt: "login",
+    //   redirectUrl: process.env.REACT_APP_REDIRECT_URL || "",
+    // };
     //@ts-ignore
-    login(extraParams);
+    // login(extraParams);
+    
+    const result = await createCibaSession({
+      baseUrl: process.env.REACT_APP_API_URL || "", //"https://api.orchestration.devel.privateid.com/oidc",
+      productGroupId: process.env.REACT_APP_PRODUCT_GROUP_ID || "" , //"test101",
+      clientId: process.env.REACT_APP_CLIENT_ID || "", // "0nCeaqMLNuIhZ2nFV029i", //"CtzBXSfip7saYUGB28gps",
+      actionFlow: "register",
+      interactionUid: getRandomToken(),
+    });
+
+    console.log("login result", result);
+    console.log("length:", result.url.length);
+    console.log("index:", result.url.indexOf("="))
+    const token = result.url.slice(result.url.indexOf("=")+1);
+    oidcContext.setTransactionToken(token);
+    oidcContext.setActionFlow("register");
+    oidcContext.setProductGroupId(process.env.REACT_APP_PRODUCT_GROUP_ID || "");
+    oidcContext.setClientId(process.env.REACT_APP_CLIENT_ID || "", );// "0nCeaqMLNuIhZ2nFV029i"); //"CtzBXSfip7saYUGB28gps");
+    navigate(`/user-consent`);    
   };
 
   const handleForgetMe = () => {
@@ -160,7 +214,7 @@ const Login = (props: Props) => {
         <Label
           className="mt-[16px] text-[16px] font-[Google Sans] text-[#5283EC] hover:underline font-[500] ms-2 cursor-pointer"
           onClick={() => {
-           handleForgetMe()
+            handleForgetMe();
           }}
         >
           Forget Me

@@ -157,12 +157,15 @@ const useScanBackDocument = (onSuccess: (e: any) => void) => {
 
   const scanBackDocument = async (canvasSize?: any) => {
     const canvasObj = canvasSize ? CANVAS_SIZE?.[canvasSize] : {};
-    const allData = (await scanBackDocumentBarcode(
-      documentCallback,
-      undefined as any,
-      // @ts-ignore
-      { document_scan_barcode_only: true },
-      canvasObj
+    const allData = (await scanBackDocumentBarcode({
+      callback: documentCallback,
+      config:  { document_scan_barcode_only: true },
+    }
+      // documentCallback,
+      // undefined as any,
+      // // @ts-ignore
+      // { document_scan_barcode_only: true },
+      // canvasObj
     )) as any;
 
     const { croppedBarcode, croppedDocument, imageData } = allData;

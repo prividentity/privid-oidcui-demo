@@ -15,7 +15,14 @@ import { getStatusFromUser } from "utils";
 import Layout from "common/layout";
 import BackButton from "common/components/backButton";
 import CameraComponent from "common/components/camera";
-import { getTransactionResult } from "@privateid/ping-oidc-web-sdk-alpha";
+import {
+  completeCibaAuth,
+  createCibaAuthRequest,
+  getCibaTokenDetails,
+  getSessionDetails,
+  getTransactionResult,
+  verifyUserOidc,
+} from "@privateid/ping-oidc-web-sdk-alpha";
 import { OidcContext } from "context/oidcContext";
 
 type Props = {
@@ -42,17 +49,63 @@ function FaceLogin(Props: Props) {
     //   uuid: faceLoginData?.puid,
     //   guid: faceLoginData?.guid,
     // });
-    
-    const baseurl = process.env.REACT_APP_API_URL || "https://api.orchestration.private.id/oidc";
-      console.log("OIDC context", oidcContext);
-      console.log("URL", baseurl);
-      const result = await getTransactionResult({token:oidcContext.transactionToken, baseUrl:  baseurl});
-      console.log("Test:", result);
 
-      if(result.url){
-        window.location.href = result.url;
-      }
-      
+    // const baseurl = process.env.REACT_APP_API_URL || "https://api.orchestration.private.id/oidc";
+    //   console.log("OIDC context", oidcContext);
+    //   console.log("URL", baseurl);
+    //   const result = await getTransactionResult({token:oidcContext.transactionToken, baseUrl:  baseurl});
+    //   console.log("Test:", result);
+
+    //   if(result.url){
+    //     window.location.href = result.url;
+    //   }
+
+    const enrollTokenDetails = await getSessionDetails({
+      baseUrl: process.env.REACT_APP_API_URL || "",
+      token: oidcContext.transactionToken,
+    });
+
+    console.log("after enroll", enrollTokenDetails);
+
+    const createCibaAuth = await createCibaAuthRequest({
+      oidcUrl: process.env.REACT_APP_OIDC_URL || "", //"https://oidc.devel.privateid.com",
+      login_hint: enrollTokenDetails.userPuid,
+      client_id: oidcContext.clientId,
+      actionFlow: "login",
+    });
+
+    console.log("cibaAuth", createCibaAuth);
+    // const verifyResult = await verifyUserOidc({
+    //   token: oidcContext.transactionToken,
+    //   baseUrl: process.env.REACT_APP_API_URL || "",
+    // });
+
+    // console.log("verify result", verifyResult);
+
+    const completeAuth = await completeCibaAuth({
+      oidcUrl: process.env.REACT_APP_OIDC_URL || "", //"https://oidc.devel.privateid.com",
+      auth_req_id: createCibaAuth.auth_req_id,
+      orchestration_session_token: oidcContext.transactionToken,
+    });
+
+    console.log("complete auth:", completeAuth);
+
+    if (completeAuth.status === "success") {
+      const lastAuth = await getCibaTokenDetails({
+        oidcUrl:process.env.REACT_APP_OIDC_URL || "",// "https://oidc.devel.privateid.com",
+        auth_req_id: createCibaAuth.auth_req_id,
+        client_id: oidcContext.clientId,
+      });
+
+      console.log("ciba token detail: ", lastAuth);
+
+      oidcContext.setCibaIdToken(lastAuth.id_token);
+      oidcContext.setCibaAccessToken(lastAuth.access_token);
+      navigateWithQueryParams("/success");
+    } else {
+      navigateWithQueryParams("/failure");
+    }
+
     // handelLoginResponse(faceLoginData);
   };
 

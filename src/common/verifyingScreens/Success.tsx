@@ -8,6 +8,7 @@ import { Button } from "components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { isMobile } from "utils";
 import { OidcContext } from "context/oidcContext";
+import useWasm from "hooks/useWasm";
 
 type Props = {
   heading?: string;
@@ -17,6 +18,8 @@ function Success(Props: Props) {
   const context = useContext(UserContext);
   const navigate = useNavigate();
   const oidcContext = useContext(OidcContext);
+
+  const {setReady} = useWasm();
   return (
     <Layout>
       <div className="h-full p-10 flex justify-between items-center flex-col max-md:p-[20px]">
@@ -53,7 +56,12 @@ function Success(Props: Props) {
         <div className="mt-[3rem] w-full">
           <Button
             className="w-full text-white bg-primary rounded-[24px] mt-4 hover:opacity-90 hover:bg-primary hover:text-white"
-            onClick={() => navigate("/")}
+            onClick={() => {
+              // context.setIsWasmLoaded(false);
+              // setReady(false);
+              navigate("/");
+              navigate(0);
+            }}
           >
             Return to homepage
           </Button>

@@ -50,7 +50,7 @@ const useWasm = (
     }
   }, [isWasmLoaded]);
 
-  return { ready, wasmStatus };
+  return { ready, wasmStatus, setReady };
 };
 
 export default useWasm;

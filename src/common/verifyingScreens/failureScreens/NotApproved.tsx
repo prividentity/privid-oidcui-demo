@@ -25,7 +25,10 @@ const NotApproved = (Props: Props) => {
         <div className="mt-[3rem] w-full">
           <Button
             className="w-full text-white bg-primary rounded-[24px] mt-4 hover:opacity-90 hover:bg-primary hover:text-white"
-            onClick={() => navigate("/")}
+            onClick={() =>{
+              navigate("/");
+              navigate(0);
+            }}
           >
             Return to homepage
           </Button>
